@@ -1,15 +1,21 @@
 import javax.mail.Message;
 
-public class MainWindow {
-	
-	public static void main(String[] args)
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+public class MainWindow extends JFrame
+{
+	public MainWindow()
 	{
-		 String host = "imap.gmail.com";// change accordingly
-	     String mailStoreType = "imap";
-	     String username = "kubik0369@gmail.com";// change accordingly
-	     String password = "OrAnGeBoX18";// change accordingly
-	     Mail gmail = new Mail(host);
-	     Message[] messages = gmail.GetUnreadMails(host, mailStoreType, username, password);
-	     //gmail.check(host, mailStoreType, username, password);
+		JLabel jlbHelloWorld = new JLabel("Hello World");
+		add(jlbHelloWorld);
+		this.setSize(300, 300);
+		// pack();
+		setVisible(true);
+	}
+	
+	public void PrintMessage(Message[] messages)
+	{
+		
 	}
 }

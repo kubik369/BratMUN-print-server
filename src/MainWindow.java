@@ -1,3 +1,4 @@
+import javax.mail.Message;
 
 public class MainWindow {
 	
@@ -7,7 +8,8 @@ public class MainWindow {
 	     String mailStoreType = "imap";
 	     String username = "kubik0369@gmail.com";// change accordingly
 	     String password = "OrAnGeBoX18";// change accordingly
-	     Mail gmail = new Mail(host, mailStoreType, username, password);
+	     Mail gmail = new Mail(host);
+	     Message[] messages = gmail.GetUnreadMails(host, mailStoreType, username, password);
 	     //gmail.check(host, mailStoreType, username, password);
 	}
 }

@@ -40,20 +40,23 @@ public class Mail
 	
 			//create the folder object and open it
 			Folder emailFolder = store.getFolder("INBOX");
-			emailFolder.open(Folder.READ_ONLY);
+			emailFolder.open(Folder.READ_WRITE);
 			// retrieve the messages from the folder in an array and print it
-			 Message messages[] = emailFolder.search(new FlagTerm(new Flags(Flag.RECENT), false));
+			 //Message messages[] = emailFolder.search(new FlagTerm(new Flags(Flag.RECENT), false));
+			Message messages[] = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 			System.out.println("messages.length---" + messages.length);
+			System.out.println("unread messages count " + emailFolder.getUnreadMessageCount());
 			
-			for (int i = messages.length -1; i > 0; i--) {
+			for (int i = messages.length -1; i >= 0; i--) {
 				Message message = messages[i];
 				System.out.println("---------------------------------");
 				System.out.println("Email Number " + (i + 1));
 				System.out.println("Subject: " + message.getSubject());
 				System.out.println("From: " + message.getFrom()[0]);
 				System.out.println("Time: " + message.getSentDate());
-				//System.out.println("Text: " + message.getContent().toString());
+				System.out.println("Text: " + message.getContent().toString());
 			}
+			emailFolder.setFlags(messages, new Flags(Flags.Flag.SEEN), true);
 			
 			//close the store and folder objects
 			emailFolder.close(false);

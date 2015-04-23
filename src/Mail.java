@@ -39,8 +39,11 @@ public class Mail
 			properties.put("mail.imap.host", host);
 			// set the port of the connection
 			properties.put("mail.imap.port", "995");
+			//properties.put("mail.imap.socketFactory.port", "995");
+			//properties.put("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 			// enable SSL secure connection
 			properties.put("mail.imap.starttls.enable", "true");
+			
 			emailSession = Session.getDefaultInstance(properties);
 			// set the protocol to IMAP  
 			store = emailSession.getStore("imaps");
@@ -72,6 +75,7 @@ public class Mail
 				System.out.println("No unread messages.");
 				return new Message[0];
 			}
+			
 			for (int i = messages.length -1; i >= 0; i--) {
 				Message message = messages[i];
 				System.out.println("---------------------------------");
@@ -79,7 +83,7 @@ public class Mail
 				System.out.println("Subject: " + message.getSubject());
 				System.out.println("From: " + message.getFrom()[0]);
 				System.out.println("Time: " + message.getSentDate());
-				System.out.println("Text: " + message.getContent().toString());
+				//System.out.println("Text: " + message.getContent().toString());
 			}
 			// mark the mails as read in the folder
 			emailFolder.setFlags(messages, new Flags(Flags.Flag.SEEN), true);

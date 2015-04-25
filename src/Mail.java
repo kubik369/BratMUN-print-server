@@ -1,22 +1,22 @@
-import java.io.IOException;
-import java.io.InputStream;
+//import java.io.IOException;
+//import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Properties;
 
-import javax.mail.Address;
-import javax.mail.BodyPart;
+//import javax.mail.Address;
+//import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
+//import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
-import javax.mail.PasswordAuthentication;
+//import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 
-import java.util.Properties;
+//import java.util.Properties;
 
 public class Mail
 {
@@ -83,7 +83,7 @@ public class Mail
 				System.out.println("Subject: " + message.getSubject());
 				System.out.println("From: " + message.getFrom()[0]);
 				System.out.println("Time: " + message.getSentDate());
-				//System.out.println("Text: " + message.getContent().toString());
+				System.out.println("Text: " + message.getContent().toString());
 			}
 			// mark the mails as read in the folder
 			emailFolder.setFlags(messages, new Flags(Flags.Flag.SEEN), true);

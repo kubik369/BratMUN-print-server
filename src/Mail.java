@@ -23,6 +23,8 @@ public class Mail
 	private Properties properties;
 	private Session emailSession;
 	private Store store;
+	private Message[] messages = new Message[1];
+
 	
 	public Mail()
 	{
@@ -52,9 +54,9 @@ public class Mail
 		catch (Exception e) {e.printStackTrace();}
 	}
 	
-	public Message[] GetUnreadMails(String host, String storeType, String user, String password)
+	public void DownloadUnreadMails(String host, String storeType, String user, String password)
 	{
-		Message[] messages = new Message[1];
+		//Message[] messages = new Message[1];
 		try{
 			// connect to the server
 			store.connect(host, user, password);
@@ -73,7 +75,7 @@ public class Mail
 			else
 			{
 				System.out.println("No unread messages.");
-				return new Message[0];
+				//return new Message[0];
 			}
 			
 			for (int i = messages.length -1; i >= 0; i--) {
@@ -94,6 +96,11 @@ public class Mail
 		}
 		catch (MessagingException e) {e.printStackTrace();}
 		catch (Exception e) {e.printStackTrace();}
+		//return messages;
+	}
+	
+	public static Message[] getMessages()
+	{
 		return messages;
 	}
 }

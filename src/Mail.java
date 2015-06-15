@@ -99,7 +99,7 @@ public class Mail
 		//return messages;
 	}
 	
-	public static Message[] getMessages()
+	public Message[] getMessages()
 	{
 		return messages;
 	}

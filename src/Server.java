@@ -39,6 +39,8 @@ import java.awt.Insets;
 import java.awt.Component;
 import javax.swing.BoxLayout;
 
+import java.awt.print.PrinterException;
+import java.io.IOException;
 public class Server
 {	
 	public static void main(String[] args)
@@ -51,6 +53,18 @@ public class Server
 		String[] credentials = logAndPass.getCredentials();
 		System.out.println("Name " + credentials[0]);
 		System.out.println("Password " + credentials[1]);
+		try{
+			myPrinter.print();
+		}
+		catch(IOException e)
+		{
+			System.out.println("IOException");
+			System.out.println(e.getMessage());
+		}
+		catch(PrinterException e){
+			System.out.println("Bad printer.");
+			System.out.println(e.getMessage());
+		}
 		//System.exit(0);
 		//gmail.DownloadUnreadMails(host, mailStoreType, credentials[0], credentials[1]);
 		//Message[] messages = gmail.getMessages();

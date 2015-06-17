@@ -53,18 +53,9 @@ public class Server
 		String[] credentials = logAndPass.getCredentials();
 		System.out.println("Name " + credentials[0]);
 		System.out.println("Password " + credentials[1]);
-		try{
-			myPrinter.print();
-		}
-		catch(IOException e)
-		{
-			System.out.println("IOException");
-			System.out.println(e.getMessage());
-		}
-		catch(PrinterException e){
-			System.out.println("Bad printer.");
-			System.out.println(e.getMessage());
-		}
+		myPrinter.getInfo();
+		myPrinter.print();
+
 		//System.exit(0);
 		//gmail.DownloadUnreadMails(host, mailStoreType, credentials[0], credentials[1]);
 		//Message[] messages = gmail.getMessages();

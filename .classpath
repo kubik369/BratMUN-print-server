@@ -3,13 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="lib/javax.mail.jar"/>
-	<classpathentry kind="lib" path="lib/SJPrintApi.jar"/>
-	<classpathentry kind="lib" path="lib/batik-awt-util.jar"/>
-	<classpathentry kind="lib" path="lib/batik-dom.jar"/>
-	<classpathentry kind="lib" path="lib/batik-svg-dom.jar"/>
-	<classpathentry kind="lib" path="lib/batik-svggen.jar"/>
-	<classpathentry kind="lib" path="lib/batik-util.jar"/>
-	<classpathentry kind="lib" path="lib/batik-xml.jar"/>
-	<classpathentry kind="lib" path="lib/SJPrintCore.jar"/>
+	<classpathentry kind="lib" path="lib/PDFBox/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/PDFBox/fontbox-2.0.0-20150616.215437-1502.jar"/>
+	<classpathentry kind="lib" path="lib/PDFBox/jempbox-2.0.0-20140823.120514-532.jar"/>
+	<classpathentry kind="lib" path="lib/PDFBox/pdfbox-2.0.0-20150616.215616-1452.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

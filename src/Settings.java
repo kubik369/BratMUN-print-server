@@ -7,22 +7,18 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import java.awt.Component;
-
-
-public class LoginDialog {
+public class Settings extends JFrame {
+	private String name, password, print, archive;
+	private Mail mailbox;
 	
-	public LoginDialog(){
-		
+	public Settings(Mail gmail){
+		this.mailbox = gmail;
 	}
 	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
-	public String[] getCredentials()
+	public boolean getCredentials()
 	{
+		// creates the input dialog for username and password
 		JPanel myPanel = new JPanel();
-
 		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
 		JLabel lUser = new JLabel("Username:");
 		lUser.setHorizontalAlignment(SwingConstants.CENTER);
@@ -37,18 +33,33 @@ public class LoginDialog {
 		
 		int result = JOptionPane.showConfirmDialog(null, myPanel, 
 		           "Login", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		String[] cred = new String[2];
+		// if user clicked on cancel, quit
 		if(result == -1 || result == JOptionPane.CANCEL_OPTION){
 			System.out.println("I never wanted to print anyway.");
 			System.exit(0);
 		}
+		// if OK then get the data from the input fields
 		else if (result == JOptionPane.OK_OPTION) {
-			cred[0] = userField.getText();
-			cred[1] = new String(passwordField.getPassword()); 
-			/*System.out.println("Username value: " + cred[0]);
-			System.out.println("Password value: " + cred[1]);
-			*/
+			setName(userField.getText());
+			setPassword(new String(passwordField.getPassword()));
+			return true;
 		}
-		return cred;
+		return false;
+	}
+	
+	public String getName(){
+		return this.name;
+	}
+	
+	public String getPassword(){
+		return this.password;
+	}
+	
+	public void setName(String s){
+		this.name = s;
+	}
+	
+	public void setPassword(String s){
+		this.password = s;
 	}
 }

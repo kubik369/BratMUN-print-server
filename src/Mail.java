@@ -1,13 +1,7 @@
-//import java.io.IOException;
-//import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
-
-
-
-
 
 //import javax.mail.Address;
 //import javax.mail.BodyPart;
@@ -16,7 +10,6 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-//import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Part;
 //import javax.mail.PasswordAuthentication;
@@ -28,7 +21,7 @@ import javax.mail.search.FlagTerm;
 
 //import java.util.Properties;
 
-// TO DO http://www.codejava.net/java-ee/javamail/download-attachments-in-e-mail-messages-using-javamail
+// downloading attachments http://www.codejava.net/java-ee/javamail/download-attachments-in-e-mail-messages-using-javamail
 
 public class Mail
 {
@@ -36,7 +29,6 @@ public class Mail
 	private Session emailSession;
 	private Store store;
 	private Folder emailFolder;
-	//private Message[] messages = new Message[1];
 	private ArrayList<Message> messages;
 	
 	public Mail()
@@ -78,12 +70,10 @@ public class Mail
 			// create the folder object and open it
 			emailFolder.open(Folder.READ_WRITE);
 			// retrieve the messages from the folder in an array
-			//Arrays.copyOf(messages, emailFolder.getUnreadMessageCount() + 10);
 			int numOfMessages = emailFolder.getUnreadMessageCount();
 			if(numOfMessages != 0){
 				System.out.println("Unread messages count: " + numOfMessages);
 				messages.addAll(Arrays.asList(emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false))));
-				//messages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 				System.out.println("Number of downloaded messages: " + numOfMessages);
 			}
 			else{
@@ -99,17 +89,6 @@ public class Mail
 				System.out.println("From: " + message.getFrom()[0]);
 				System.out.println("Time: " + message.getSentDate());
 				System.out.println("Text: " + message.getContent().toString());
-				
-				/*MimeMessage tempmsg = new MimeMessage((MimeMessage)message);
-				Multipart multiPart = (Multipart) tempmsg.getContent();
-				for (int j = 0; j < multiPart.getCount(); j++) {
-				    MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(j);
-				    if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
-				        System.out.println("Trying to save the file " + part.getFileName());
-				    	part.saveFile("c:\\Users\\Jakub\\Desktop\\test\\" + part.getFileName());
-				        System.out.println("Succesfully saved file " + part.getFileName() + " from " + message.getFrom()[0].toString());
-				    }
-				}*/	
 			}
 			// mark the mails as read in the folder
 			Message[] arrMessages = new Message[messages.size()];
@@ -171,6 +150,8 @@ public class Mail
 				e.printStackTrace();
 			}
 		}
+		if(!(store.isConnected() && emailFolder.isOpen()))
+			return files;
 		for(Message message : messages){
 			try{
 				MimeMessage tempmsg = new MimeMessage((MimeMessage)message);
@@ -189,12 +170,17 @@ public class Mail
 				e.printStackTrace();
 			}
 		}
-		/*try{store.close();}
+		try{
+			if(store.isConnected())
+				store.close();
+			if(emailFolder.isOpen())
+				emailFolder.close(false);
+		}
 		catch(MessagingException e){
 			System.out.println("Could not close the connection to mail while downloading attachments.");
 			e.printStackTrace();
 			return files;
-		}*/
+		}
 		System.out.println("Succesfully downloaded all the attachments.");
 		return files;
 	}

@@ -7,17 +7,23 @@ import java.util.Properties;
 
 
 
+
+
 //import javax.mail.Address;
 //import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 //import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
+import javax.mail.Part;
 //import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
 
 //import java.util.Properties;
@@ -29,6 +35,7 @@ public class Mail
 	private Properties properties;
 	private Session emailSession;
 	private Store store;
+	private Folder emailFolder;
 	//private Message[] messages = new Message[1];
 	private ArrayList<Message> messages;
 	
@@ -51,6 +58,8 @@ public class Mail
 			//properties.put("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 			// enable SSL secure connection
 			properties.put("mail.imap.starttls.enable", "true");
+			properties.put("mail.mime.base64.ignoreerrors", "true");
+			properties.put("mail.imaps.partialfetch", "false");
 			
 			emailSession = Session.getDefaultInstance(properties);
 			// set the protocol to IMAP  
@@ -63,12 +72,10 @@ public class Mail
 	
 	public void DownloadUnreadMails(String host, String storeType, String user, String password)
 	{
-		//Message[] messages = new Message[1];
 		try{
 			// connect to the server
 			store.connect(host, user, password);
 			// create the folder object and open it
-			Folder emailFolder = store.getFolder("INBOX");
 			emailFolder.open(Folder.READ_WRITE);
 			// retrieve the messages from the folder in an array
 			//Arrays.copyOf(messages, emailFolder.getUnreadMessageCount() + 10);
@@ -92,19 +99,27 @@ public class Mail
 				System.out.println("From: " + message.getFrom()[0]);
 				System.out.println("Time: " + message.getSentDate());
 				System.out.println("Text: " + message.getContent().toString());
+				
+				/*MimeMessage tempmsg = new MimeMessage((MimeMessage)message);
+				Multipart multiPart = (Multipart) tempmsg.getContent();
+				for (int j = 0; j < multiPart.getCount(); j++) {
+				    MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(j);
+				    if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+				        System.out.println("Trying to save the file " + part.getFileName());
+				    	part.saveFile("c:\\Users\\Jakub\\Desktop\\test\\" + part.getFileName());
+				        System.out.println("Succesfully saved file " + part.getFileName() + " from " + message.getFrom()[0].toString());
+				    }
+				}*/	
 			}
 			// mark the mails as read in the folder
-			emailFolder.setFlags((Message[])messages.toArray(), new Flags(Flags.Flag.SEEN), true);
+			Message[] arrMessages = new Message[messages.size()];
+			emailFolder.setFlags(messages.toArray(arrMessages), new Flags(Flags.Flag.SEEN), true);
 			//close the store and folder objects
 			emailFolder.close(false);
 			store.close();
 		}
-		catch (MessagingException e) {
+		catch (MessagingException|IOException e) {
 			System.out.println("Something went wrong while downloading mails.");
-			System.out.println(e.getMessage());
-		}
-		catch(IOException e){
-			System.out.println("Something wrong with IO.");
 			System.out.println(e.getMessage());
 		}
 		//return messages;
@@ -113,6 +128,7 @@ public class Mail
 	public boolean checkConnection(String host, String user, String password){
 		try{
 			store.connect(host, user, password);
+			emailFolder = store.getFolder("INBOX");
 			store.close();
 			return true;
 		}
@@ -138,8 +154,53 @@ public class Mail
 		return names;
 	}
 	
+	public ArrayList<String> getAttachments(){
+		ArrayList<String> files = new ArrayList<String>();
+		if(!store.isConnected()){
+			try{store.connect();}
+			catch(MessagingException e){
+				System.out.println("Could not connect to mail while downloading attachments.");
+				e.printStackTrace();
+				return files;
+			}
+		}
+		if(!emailFolder.isOpen()){
+			try{emailFolder.open(Folder.READ_WRITE);}
+			catch(MessagingException e){
+				System.out.println("Could not open the folder.");
+				e.printStackTrace();
+			}
+		}
+		for(Message message : messages){
+			try{
+				MimeMessage tempmsg = new MimeMessage((MimeMessage)message);
+				Multipart multiPart = (Multipart) tempmsg.getContent();
+				for (int i = 0; i < multiPart.getCount(); i++) {
+				    MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(i);
+				    if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+				        System.out.println("Trying to save the file " + part.getFileName());
+				    	part.saveFile("c:\\Users\\Jakub\\Desktop\\test\\" + part.getFileName());
+				        System.out.println("Succesfully saved file " + part.getFileName() + " from " + message.getFrom()[0].toString());
+				    }
+				}	
+			}
+			catch(MessagingException|IOException e){
+				System.out.println("Something wrong with getting attachments.");
+				e.printStackTrace();
+			}
+		}
+		/*try{store.close();}
+		catch(MessagingException e){
+			System.out.println("Could not close the connection to mail while downloading attachments.");
+			e.printStackTrace();
+			return files;
+		}*/
+		System.out.println("Succesfully downloaded all the attachments.");
+		return files;
+	}
+	
 	public ArrayList<Message> getMessages()
 	{
-		return messages;
+		return this.messages;
 	}
 }

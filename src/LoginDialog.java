@@ -38,11 +38,11 @@ public class LoginDialog {
 		int result = JOptionPane.showConfirmDialog(null, myPanel, 
 		           "Login", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		String[] cred = new String[2];
-		if(result == -1){
+		if(result == -1 || result == JOptionPane.CANCEL_OPTION){
 			System.out.println("I never wanted to print anyway.");
 			System.exit(0);
 		}
-		if (result == JOptionPane.OK_OPTION) {
+		else if (result == JOptionPane.OK_OPTION) {
 			cred[0] = userField.getText();
 			cred[1] = new String(passwordField.getPassword()); 
 			/*System.out.println("Username value: " + cred[0]);

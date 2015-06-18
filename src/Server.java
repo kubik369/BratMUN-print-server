@@ -43,8 +43,7 @@ public class Server
 			System.out.println("Password " + credentials[1]);
 		} while(gmail.checkConnection(host, credentials[0], credentials[1]) != true);
 
-		
-		Printer myPrinter = new Printer();
+		//Printer myPrinter = new Printer();
 		/*try{
 			myPrinter.print("c:\\Users\\Jakub\\Desktop\\test\\test.pdf", 50);
 		}
@@ -61,7 +60,8 @@ public class Server
 
 		//System.exit(0);
 		gmail.DownloadUnreadMails(host, mailStoreType, credentials[0], credentials[1]);
-		gmail.getSender();
+		System.out.println("Getting senders");
+		gmail.getSenders();
 		//Message[] messages = gmail.getMessages();
 		/*if(messages.length != 0){
 			myPrinter.Print();

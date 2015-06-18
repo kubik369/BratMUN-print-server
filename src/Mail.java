@@ -1,8 +1,10 @@
 //import java.io.IOException;
 //import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
+
 
 
 //import javax.mail.Address;
@@ -27,8 +29,8 @@ public class Mail
 	private Properties properties;
 	private Session emailSession;
 	private Store store;
-	private Message[] messages = new Message[1];
-
+	//private Message[] messages = new Message[1];
+	private ArrayList<Message> messages;
 	
 	public Mail()
 	{
@@ -53,6 +55,7 @@ public class Mail
 			emailSession = Session.getDefaultInstance(properties);
 			// set the protocol to IMAP  
 			store = emailSession.getStore("imaps");
+			messages = new ArrayList<Message>();
 		} 
 		catch (NoSuchProviderException e) {e.printStackTrace();}
 		catch (Exception e) {e.printStackTrace();}
@@ -68,22 +71,21 @@ public class Mail
 			Folder emailFolder = store.getFolder("INBOX");
 			emailFolder.open(Folder.READ_WRITE);
 			// retrieve the messages from the folder in an array
-			Arrays.copyOf(messages, emailFolder.getUnreadMessageCount() + 10);
+			//Arrays.copyOf(messages, emailFolder.getUnreadMessageCount() + 10);
 			int numOfMessages = emailFolder.getUnreadMessageCount();
-			if(numOfMessages != 0)
-			{
-				System.out.println("Unread messages count: " + emailFolder.getUnreadMessageCount());
-				messages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
-				System.out.println("Number of downloaded messages: " + messages.length);
+			if(numOfMessages != 0){
+				System.out.println("Unread messages count: " + numOfMessages);
+				messages.addAll(Arrays.asList(emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false))));
+				//messages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+				System.out.println("Number of downloaded messages: " + numOfMessages);
 			}
-			else
-			{
+			else{
 				System.out.println("No unread messages.");
-				//return new Message[0];
+				return;
 			}
-			
-			for (int i = messages.length -1; i >= 0; i--) {
-				Message message = messages[i];
+			// print all the information from the downloaded mails
+			for (int i = messages.size() -1; i >= 0; i--) {
+				Message message = messages.get(i);
 				System.out.println("---------------------------------");
 				System.out.println("Email Number " + (i + 1));
 				System.out.println("Subject: " + message.getSubject());
@@ -92,14 +94,17 @@ public class Mail
 				System.out.println("Text: " + message.getContent().toString());
 			}
 			// mark the mails as read in the folder
-			emailFolder.setFlags(messages, new Flags(Flags.Flag.SEEN), true);
-			
+			emailFolder.setFlags((Message[])messages.toArray(), new Flags(Flags.Flag.SEEN), true);
 			//close the store and folder objects
 			emailFolder.close(false);
 			store.close();
 		}
-		catch (Exception e) {
+		catch (MessagingException e) {
 			System.out.println("Something went wrong while downloading mails.");
+			System.out.println(e.getMessage());
+		}
+		catch(IOException e){
+			System.out.println("Something wrong with IO.");
 			System.out.println(e.getMessage());
 		}
 		//return messages;
@@ -118,7 +123,7 @@ public class Mail
 		}
 	}
 	
-	public ArrayList<String> getSender(){
+	public ArrayList<String> getSenders(){
 		ArrayList<String> names = new ArrayList<String>();
 		for(Message message : this.messages){
 			try{
@@ -133,7 +138,7 @@ public class Mail
 		return names;
 	}
 	
-	public Message[] getMessages()
+	public ArrayList<Message> getMessages()
 	{
 		return messages;
 	}

@@ -30,13 +30,14 @@ public class Mail
 	private Store store;
 	private Folder emailFolder;
 	private ArrayList<Message> messages;
+	private Settings settings;
 	
 	public Mail()
 	{
 		
 	}
 	
-	public Mail(String host)
+	public Mail(String host, Settings set)
 	{
 		try 
 		{
@@ -53,10 +54,11 @@ public class Mail
 			properties.put("mail.mime.base64.ignoreerrors", "true");
 			properties.put("mail.imaps.partialfetch", "false");
 			
-			emailSession = Session.getDefaultInstance(properties);
+			this.emailSession = Session.getDefaultInstance(properties);
 			// set the protocol to IMAP  
-			store = emailSession.getStore("imaps");
-			messages = new ArrayList<Message>();
+			this.store = emailSession.getStore("imaps");
+			this.messages = new ArrayList<Message>();
+			this.settings = set;
 		} 
 		catch (NoSuchProviderException e) {e.printStackTrace();}
 		catch (Exception e) {e.printStackTrace();}
@@ -160,7 +162,7 @@ public class Mail
 				    MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(i);
 				    if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
 				        System.out.println("Trying to save the file " + part.getFileName());
-				    	part.saveFile("c:\\Users\\Jakub\\Desktop\\test\\" + part.getFileName());
+				    	part.saveFile(settings.getPrintDir() + part.getFileName());
 				        System.out.println("Succesfully saved file " + part.getFileName() + " from " + message.getFrom()[0].toString());
 				    }
 				}	

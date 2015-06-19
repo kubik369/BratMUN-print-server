@@ -3,6 +3,7 @@ import java.awt.print.PrinterException;
 import java.io.IOException;
 
 import javax.mail.Message;
+import javax.swing.JFrame;
 
 public class Server
 {	
@@ -13,11 +14,25 @@ public class Server
 		
 		Mail gmail = new Mail(host);
 		Settings settings = new Settings(gmail);
-		MainWindow window = new MainWindow();
-		do{settings.getCredentials();}
+		
+		do
+		{
+			settings.getCredentials();
+		}
 		while(gmail.checkConnection(host, settings.getName(), settings.getPassword()) != true);
+		
+		gmail.DownloadUnreadMails(host, mailStoreType, settings.getName(), settings.getPassword());
+		System.out.println("Getting senders.");
+		gmail.getSenders();
+		System.out.println("Getting attachments.");
+		gmail.getAttachments();
+	
+		MainWindow window = new MainWindow(gmail);
+
 		settings.setPrintFolder(0);
-		System.exit(0);
+		//System.exit(0);
+		
+		
 		//Printer myPrinter = new Printer();
 		/*try{
 			myPrinter.print("c:\\Users\\Jakub\\Desktop\\test\\test.pdf", 50);
@@ -33,12 +48,6 @@ public class Server
         	java.awt.Toolkit.getDefaultToolkit().beep();
         }*/
 
-		//System.exit(0);
-		gmail.DownloadUnreadMails(host, mailStoreType, settings.getName(), settings.getPassword());
-		System.out.println("Getting senders.");
-		gmail.getSenders();
-		System.out.println("Getting attachments.");
-		gmail.getAttachments();
 		//Message[] messages = gmail.getMessages();
 		/*if(messages.length != 0){
 			myPrinter.Print();

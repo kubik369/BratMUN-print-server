@@ -1,28 +1,17 @@
-import javax.mail.Message;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-public class MainWindow extends JFrame
+public class MainWindow
 {
-	public MainWindow()
+	public MainWindow(Mail a)
 	{
-		this.setSize(800, 550);
-		// pack();
-		setVisible(true);
-		MainPanel myMainPanel = new MainPanel(); 
-		add(myMainPanel);
-		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-	}
-	
-	public void PrintMessage(Message[] messages)
-	{
+		JFrame frame = new JFrame();
+		frame.setSize(800, 550);
 		
-	}
-	
-	public static void main(String[] args) 
-	{
-		JFrame frame = new MainWindow();
+		MainPanel myMainPanel = new MainPanel(a); 
+		frame.add(myMainPanel);
+		
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
 }

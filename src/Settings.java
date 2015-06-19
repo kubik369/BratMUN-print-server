@@ -1,4 +1,6 @@
+
 import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -40,11 +42,29 @@ public class Settings extends JFrame {
 		}
 		// if OK then get the data from the input fields
 		else if (result == JOptionPane.OK_OPTION) {
-			setName(userField.getText());
-			setPassword(new String(passwordField.getPassword()));
+			this.name = userField.getText();
+			this.password = new String(passwordField.getPassword());
 			return true;
 		}
 		return false;
+	}
+	
+	public void setPrintFolder(int choice){
+		JFileChooser chooser = new JFileChooser();
+	    chooser.setCurrentDirectory(new java.io.File("."));
+	    chooser.setDialogTitle("choosertitle");
+	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    chooser.setAcceptAllFileFilterUsed(false);
+
+	    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+	      System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+	      System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+	      if(choice == 1) this.print = chooser.getSelectedFile().toString();
+	      else this.archive = chooser.getSelectedFile().toString();
+	      //System.out.println(chooser.getSelectedFile().toString() + " " + chooser.getSelectedFile().getClass());
+	    } else {
+	      System.out.println("No Selection ");
+	    }
 	}
 	
 	public String getName(){
@@ -61,5 +81,13 @@ public class Settings extends JFrame {
 	
 	public void setPassword(String s){
 		this.password = s;
+	}
+	
+	public String getPrintDir(){
+		return this.print;
+	}
+	
+	public String getArchiveDir(){
+		return this.archive;
 	}
 }

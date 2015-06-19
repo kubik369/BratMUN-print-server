@@ -16,6 +16,8 @@ public class Server
 		MainWindow window = new MainWindow();
 		do{settings.getCredentials();}
 		while(gmail.checkConnection(host, settings.getName(), settings.getPassword()) != true);
+		settings.setPrintFolder(0);
+		System.exit(0);
 		//Printer myPrinter = new Printer();
 		/*try{
 			myPrinter.print("c:\\Users\\Jakub\\Desktop\\test\\test.pdf", 50);

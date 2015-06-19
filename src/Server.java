@@ -14,7 +14,7 @@ public class Server
 		
 		Mail gmail = new Mail(host);
 		Settings settings = new Settings(gmail);
-		
+		gmail.setSettings(settings);
 		do
 		{
 			settings.getCredentials();

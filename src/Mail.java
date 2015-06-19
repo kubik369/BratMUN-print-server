@@ -3,8 +3,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 
-//import javax.mail.Address;
-//import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -12,14 +10,11 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Part;
-//import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
-
-//import java.util.Properties;
 
 // downloading attachments http://www.codejava.net/java-ee/javamail/download-attachments-in-e-mail-messages-using-javamail
 
@@ -37,7 +32,7 @@ public class Mail
 		
 	}
 	
-	public Mail(String host, Settings set)
+	public Mail(String host)
 	{
 		try 
 		{
@@ -58,10 +53,11 @@ public class Mail
 			// set the protocol to IMAP  
 			this.store = emailSession.getStore("imaps");
 			this.messages = new ArrayList<Message>();
-			this.settings = set;
 		} 
-		catch (NoSuchProviderException e) {e.printStackTrace();}
-		catch (Exception e) {e.printStackTrace();}
+		catch (NoSuchProviderException e) {
+			System.out.println("Error while creating Mail object.");
+			e.printStackTrace();
+		}
 	}
 	
 	public void DownloadUnreadMails(String host, String storeType, String user, String password)
@@ -135,25 +131,37 @@ public class Mail
 		return names;
 	}
 	
+	public void connect() throws MessagingException{
+		if(!store.isConnected())
+			store.connect();
+		if(!emailFolder.isOpen())
+			emailFolder.open(Folder.READ_WRITE);
+		if(!(store.isConnected() && emailFolder.isOpen()))
+		{
+			System.out.println("Could not connect to the server.");
+			throw new MessagingException();
+		}
+	}
+	
+	public void disconnect() throws MessagingException{
+		if(store.isConnected())
+			store.close();
+		if(emailFolder.isOpen())
+			emailFolder.close(false);
+		if(emailFolder.isOpen() || store.isConnected());
+			throw new MessagingException();
+	}
+	
 	public ArrayList<String> getAttachments(){
 		ArrayList<String> files = new ArrayList<String>();
-		if(!store.isConnected()){
-			try{store.connect();}
-			catch(MessagingException e){
-				System.out.println("Could not connect to mail while downloading attachments.");
-				e.printStackTrace();
-				return files;
-			}
+		try{
+			this.connect();
 		}
-		if(!emailFolder.isOpen()){
-			try{emailFolder.open(Folder.READ_WRITE);}
-			catch(MessagingException e){
-				System.out.println("Could not open the folder.");
-				e.printStackTrace();
-			}
-		}
-		if(!(store.isConnected() && emailFolder.isOpen()))
+		catch(MessagingException e){
+			System.out.println("Could not connect to the server.");
+			e.printStackTrace();
 			return files;
+		}
 		for(Message message : messages){
 			try{
 				MimeMessage tempmsg = new MimeMessage((MimeMessage)message);
@@ -168,20 +176,17 @@ public class Mail
 				}	
 			}
 			catch(MessagingException|IOException e){
-				System.out.println("Something wrong with getting attachments.");
+				System.out.println("Something wrong while getting attachments.");
 				e.printStackTrace();
 			}
 		}
 		try{
-			if(store.isConnected())
-				store.close();
-			if(emailFolder.isOpen())
-				emailFolder.close(false);
+			this.disconnect();
 		}
 		catch(MessagingException e){
-			System.out.println("Could not close the connection to mail while downloading attachments.");
+			System.out.println("Could not disconnect from the server.");
 			e.printStackTrace();
-			return files;
+			return new ArrayList<String>();
 		}
 		System.out.println("Succesfully downloaded all the attachments.");
 		return files;
@@ -190,5 +195,9 @@ public class Mail
 	public ArrayList<Message> getMessages()
 	{
 		return this.messages;
+	}
+	
+	public void setSettings(Settings set){
+		this.settings = set;
 	}
 }

@@ -1,6 +1,8 @@
 import java.awt.Desktop;
+import java.awt.print.Paper;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.awt.print.Paper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import javax.swing.JOptionPane;
 
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.printing.*;
 
 public class Printer
@@ -52,9 +56,17 @@ public class Printer
             	File f = new File(filename);
             	PDDocument temp = PDDocument.load(f),
             			   doc = new PDDocument();
-            	for(int i = 0;i < copies;i++)
-            		ut.appendDocument(doc, temp);
-            	
+            	/*System.out.println("Opened the file.");
+            	PDPageTree allPages = temp.getPages();
+            	for(int i = 0;i < copies;i++){
+	            	for(PDPage p : allPages){
+	            		doc.addPage(p);
+	            	}
+            	}
+            	System.out.println("Created the output file.");*/
+            	//for(int i = 0;i < copies;i++)
+            	//	ut.appendDocument(doc, temp);
+            	//temp.close();
             	//File myFile = new File(filename);
                 //PDDocument doc = PDDocument.load(myFile);
             	
@@ -64,9 +76,14 @@ public class Printer
             	ut.setDestinationFileName("c:\\Users\\Jakub\\Desktop\\test\\temp.pdf");
             	ut.mergeDocuments();
             	File f = new File("c:\\Users\\Jakub\\Desktop\\test\\temp.pdf");*/
-            	
+            	doc = temp;
+            	job.setCopies(copies);
+            	System.out.println("Number of copies in printerJob = " + job.getCopies());
             	PDFPrinter printing = new PDFPrinter(doc, Scaling.ACTUAL_SIZE, Orientation.AUTO);
-    	    	printing.silentPrint(job);
+            	//PDFPrinter printing = new PDFPrinter(doc, job, Scaling.ACTUAL_SIZE, Orientation.AUTO, doc.getPage(0).);
+            	//for(int i = 0;i < copies;i++)
+            		printing.silentPrint();
+    	    	doc.close();
             } catch (IOException ex) {
                 // no application registered for PDFs
             }

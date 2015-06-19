@@ -27,11 +27,6 @@ public class Mail
 	private ArrayList<Message> messages;
 	private Settings settings;
 	
-	public Mail()
-	{
-		
-	}
-	
 	public Mail(String host)
 	{
 		try 
@@ -105,7 +100,7 @@ public class Mail
 	public boolean checkConnection(String host, String user, String password){
 		try{
 			store.connect(host, user, password);
-			emailFolder = store.getFolder("INBOX");
+			this.emailFolder = store.getFolder("INBOX");
 			store.close();
 			return true;
 		}

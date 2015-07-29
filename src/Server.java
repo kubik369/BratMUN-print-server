@@ -1,5 +1,11 @@
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.awt.print.PrinterException;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Server
 {	
@@ -11,11 +17,7 @@ public class Server
 		Mail gmail = new Mail(host);
 		Settings settings = new Settings(gmail);
 		gmail.setSettings(settings);
-		// get the name and password and try the connection to the server.
-		do{
-			settings.getCredentials();
-		}
-		while(gmail.checkConnection(host, settings.getName(), settings.getPassword()) != true);
+
 		/*
 		gmail.DownloadUnreadMails(host, mailStoreType, settings.getName(), settings.getPassword());
 		System.out.println("Getting senders.");
@@ -23,12 +25,13 @@ public class Server
 		System.out.println("Getting attachments.");
 		gmail.getAttachments();
 	*/
-		MainWindow window = new MainWindow(gmail);
-
-		settings.setPrintFolder(0);
-		Printer myPrinter = new Printer();
+		MainWindow window = new MainWindow(gmail, settings);
+		/*settings.setDirs();
+		Printer myPrinter = new Printer(settings.getDir());
 		try{
-			myPrinter.print("c:\\Users\\Jakub\\Desktop\\test\\test.pdf", 3);
+			System.out.println(settings.getDir());
+			//System.exit(0);
+			myPrinter.print(settings.getDir() + "/test.pdf", 1);
 		}
 		catch (PrinterException e){
         	System.out.println("Something went wrong with the printer.");
@@ -39,6 +42,6 @@ public class Server
         	System.out.println("File could not be opened.");
         	System.out.println(e.getMessage());
         	java.awt.Toolkit.getDefaultToolkit().beep();
-        }
+        }*/
 	}
 }

@@ -1,7 +1,8 @@
-/LoginDialog.class
-/Mail.class
+/MainWindow$1.class
 /MainPanel$1.class
-/MainPanel.class
-/MainWindow.class
-/Printer.class
-/Server.class
+/MainWindow$2.class
+/MainWindow$3.class
+/Archive.class
+/ArchiveMessage.class
+/FileStatus.class
+/DocStatus.class

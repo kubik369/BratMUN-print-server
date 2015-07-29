@@ -1,4 +1,10 @@
 
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -10,15 +16,17 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class Settings extends JFrame {
-	private String name, password, print, archive;
+	private String name, password, workDir;
+	boolean loginStatus = false;
 	private Mail mailbox;
 	
 	public Settings(Mail gmail){
 		this.mailbox = gmail;
 	}
 	
-	public boolean getCredentials()
+	public void getCredentials()
 	{
+		this.loginStatus = false;
 		// creates the input dialog for username and password
 		JPanel myPanel = new JPanel();
 		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
@@ -35,36 +43,50 @@ public class Settings extends JFrame {
 		
 		int result = JOptionPane.showConfirmDialog(null, myPanel, 
 		           "Login", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		// if user clicked on cancel, quit
-		if(result == -1 || result == JOptionPane.CANCEL_OPTION){
-			System.out.println("I never wanted to print anyway.");
-			System.exit(0);
+		if (result == JOptionPane.OK_OPTION) {
+			if(mailbox.checkConnection("imap.gmail.com", userField.getText(), new String(passwordField.getPassword()))){
+				this.name = userField.getText();
+				this.password = new String(passwordField.getPassword());
+				this.loginStatus = true;
+			}
 		}
-		// if OK then get the data from the input fields
-		else if (result == JOptionPane.OK_OPTION) {
-			this.name = userField.getText();
-			this.password = new String(passwordField.getPassword());
-			return true;
-		}
-		return false;
 	}
 	
-	public void setPrintFolder(int choice){
+	public void setDir() {
 		JFileChooser chooser = new JFileChooser();
-	    chooser.setCurrentDirectory(new java.io.File("."));
-	    chooser.setDialogTitle("choosertitle");
-	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-	    chooser.setAcceptAllFileFilterUsed(false);
+		
+		chooser.setCurrentDirectory(new java.io.File("."));
+		chooser.setDialogTitle("Please choose your operating directory");
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		chooser.setAcceptAllFileFilterUsed(false);
+		int option = chooser.showOpenDialog(null);
+		if (option == JFileChooser.APPROVE_OPTION) {
+			// System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+			//System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
 
-	    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-	      System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
-	      System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
-	      if(choice == 1) this.print = chooser.getSelectedFile().toString();
-	      else this.archive = chooser.getSelectedFile().toString();
-	      //System.out.println(chooser.getSelectedFile().toString() + " " + chooser.getSelectedFile().getClass());
-	    } else {
-	      System.out.println("No Selection ");
-	    }
+			// checks whether user has not picked a file
+			if (Files.isDirectory(Paths.get(chooser.getSelectedFile().toString()))) {
+				this.workDir = chooser.getSelectedFile().toString();
+				JOptionPane.showMessageDialog(null, "Directory successfuly changed.", "Directory status", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else {
+				JOptionPane.showMessageDialog(null, "You have not chosen a directory!", "Directory change error", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+		} 
+		else{
+			System.out.println("No selection or cancel.");
+			return;
+		}
+		Path archive = FileSystems.getDefault().getPath(this.workDir + "\\archive");
+		if (Files.notExists(archive)) {
+			try {
+				Files.createDirectory(archive);
+				System.out.println("Archive directory successfully created.");
+			} catch (IOException e) {
+				System.out.println("Error while creating an archive directory - " + e.getMessage());
+			}
+		}
 	}
 	
 	public String getName(){
@@ -75,6 +97,14 @@ public class Settings extends JFrame {
 		return this.password;
 	}
 	
+	public boolean getLoginStatus(){
+		return this.loginStatus;
+	}
+	
+	public String getDir(){
+		return this.workDir;
+	}
+	
 	public void setName(String s){
 		this.name = s;
 	}
@@ -83,11 +113,7 @@ public class Settings extends JFrame {
 		this.password = s;
 	}
 	
-	public String getPrintDir(){
-		return this.print;
-	}
-	
-	public String getArchiveDir(){
-		return this.archive;
+	public void setLoginStatus(boolean b){
+		this.loginStatus = b;
 	}
 }

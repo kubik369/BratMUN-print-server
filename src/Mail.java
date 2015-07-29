@@ -27,8 +27,7 @@ public class Mail
 	private ArrayList<Message> messages;
 	private Settings settings;
 	
-	public Mail(String host)
-	{
+	public Mail(String host){
 		try 
 		{
 			// create properties field
@@ -55,8 +54,7 @@ public class Mail
 		}
 	}
 	
-	public void DownloadUnreadMails(String host, String storeType, String user, String password)
-	{
+	public void DownloadUnreadMails(String host, String storeType, String user, String password){
 		try{
 			// connect to the server
 			store.connect(host, user, password);
@@ -165,7 +163,7 @@ public class Mail
 				    MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(i);
 				    if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
 				        System.out.println("Trying to save the file " + part.getFileName());
-				    	part.saveFile(settings.getPrintDir() + part.getFileName());
+				    	part.saveFile(settings.getDir() + part.getFileName());
 				        System.out.println("Succesfully saved file " + part.getFileName() + " from " + message.getFrom()[0].toString());
 				    }
 				}	
@@ -187,8 +185,7 @@ public class Mail
 		return files;
 	}
 	
-	public ArrayList<Message> getMessages()
-	{
+	public ArrayList<Message> getMessages(){
 		return this.messages;
 	}
 	

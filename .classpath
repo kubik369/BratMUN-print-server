@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="lib/PDFBox/jempbox-2.0.0-20140823.120514-532.jar"/>
 	<classpathentry kind="lib" path="lib/PDFBox/pdfbox-2.0.0-20150616.215616-1452.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/jsch-0.1.53.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

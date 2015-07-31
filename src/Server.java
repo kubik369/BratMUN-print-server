@@ -15,9 +15,18 @@ public class Server
 				mailStoreType = "imap";
 		
 		Mail gmail = new Mail(host);
-		Settings settings = new Settings(gmail);
+		FTP ftp = new FTP();
+		Settings settings = new Settings(gmail, ftp);
 		gmail.setSettings(settings);
-
+		
+		/*Archive archive = new Archive("C:/Users/Jakub/Desktop/test");
+		ArchiveMessage am = new ArchiveMessage("random_Jakub-Simo_10.pdf", FileStatus.Downloaded);
+		archive.backupMessage(am);
+		archive.loadArchive();
+		System.out.println(archive.getMessages().get(0).getFilename());*/
+		//System.exit(0);
+		
+		//ftp.startFTP();
 		/*
 		gmail.DownloadUnreadMails(host, mailStoreType, settings.getName(), settings.getPassword());
 		System.out.println("Getting senders.");

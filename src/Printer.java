@@ -54,20 +54,22 @@ public class Printer
 		PrinterJob job = PrinterJob.getPrinterJob();
 		job.setPrintService(myPrinter);
 		try {
+			Path src = Paths.get(this.workDir + "/downloads/" + filename),
+				 dest = Paths.get(this.workDir + "/archive/originals/test.pdf"),
+				 temp = Paths.get(this.workDir + "/temp.pdf");
+			
 			PDFMergerUtility ut = new PDFMergerUtility();
-			File f = new File(filename);
+			File f = src.toFile();
 			for(int i = 0;i < copies;i++)
 				ut.addSource(f);
-			ut.setDestinationFileName(this.workDir + "/temp.pdf");
+			ut.setDestinationFileName(temp.toString());
 			ut.mergeDocuments();
-			File out = new File(this.workDir + "/temp.pdf");
+			File out = temp.toFile();
 			PDDocument doc = PDDocument.load(out);
 			PDFPrinter printing = new PDFPrinter(doc, Scaling.ACTUAL_SIZE, Orientation.AUTO);
 			printing.silentPrint(job);
 			doc.close();
-			Files.delete(Paths.get(this.workDir + "/temp.pdf"));
-			Path src = Paths.get(this.workDir + "/test.pdf");
-			Path dest = Paths.get(this.workDir + "/archive/test.pdf");
+			Files.delete(temp);
 			Files.copy(src, dest, REPLACE_EXISTING);
 			cleaner.track(f, job);
 		}

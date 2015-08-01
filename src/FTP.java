@@ -3,8 +3,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-
 import java.util.Vector;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -18,12 +20,12 @@ public class FTP {
 		/*String SFTPHOST = "server02.inetadmin.eu";
 		int SFTPPORT = 22;
 		String SFTPUSER = "janbolech_kubik369";
-		String SFTPPASS = "orangebox";
+		String SFTPPASS = JOptionPane.showInputDialog(new JFrame("InputDialog"), "Input your FTP password?");
 		String SFTPWORKINGDIR = "/ironbaron.eu/";*/
 		String SFTPHOST = "eloth.gjh.sk";
 		int SFTPPORT = 22;
 		String SFTPUSER = "simo.j";
-		String SFTPPASS = "OrAnGeBoX18";
+		String SFTPPASS = JOptionPane.showInputDialog(new JFrame("InputDialog"), "Input your FTP password?");
 		String SFTPWORKINGDIR = "/home/2012/simo.j/imagine/";
 		Session session = null;
 		Channel channel = null;

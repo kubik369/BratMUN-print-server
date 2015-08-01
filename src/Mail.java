@@ -163,7 +163,7 @@ public class Mail
 				    MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(i);
 				    if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
 				        System.out.println("Trying to save the file " + part.getFileName());
-				    	part.saveFile(settings.getDir() + part.getFileName());
+				    	part.saveFile(settings.getWorkDir() + part.getFileName());
 				        System.out.println("Succesfully saved file " + part.getFileName() + " from " + message.getFrom()[0].toString());
 				    }
 				}	

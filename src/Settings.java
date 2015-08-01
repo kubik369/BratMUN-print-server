@@ -22,14 +22,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class Settings extends JFrame {
-	private String name, password, workDir;
-	boolean loginStatus = false;
-	private Mail mailbox;
+	private String user, password, host, workDir;
+	private int port;
+	boolean loginStatus, dirsCreated;
+	//private Mail mailbox;
 	private FTP ftp;
 	
-	public Settings(Mail gmail, FTP f){
-		this.mailbox = gmail;
-		this.ftp = f;
+	public Settings(){
+		//this.mailbox = gmail;
 	}
 	
 	public void getCredentials()
@@ -58,7 +58,6 @@ public class Settings extends JFrame {
 				this.loginStatus = true;
 			}
 		}*/
-		this.loginStatus = false;
 		// creates the input dialog for username and password
 		JPanel myPanel = new JPanel(),
 				pUser = new JPanel(new GridBagLayout()),
@@ -95,10 +94,15 @@ public class Settings extends JFrame {
 		int result = JOptionPane.showConfirmDialog(null, myPanel, 
 		           "Login", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		if (result == JOptionPane.OK_OPTION) {
-			if(mailbox.checkConnection("imap.gmail.com", tfUser.getText(), new String(pfPassword.getPassword()))){
-				this.name = tfUser.getText();
-				this.password = new String(pfPassword.getPassword());
-				this.loginStatus = true;
+			// if(mailbox.checkConnection("imap.gmail.com", tfUser.getText(), new String(pfPassword.getPassword()))){
+			this.host = tfServer.getText().trim();
+			this.user = tfUser.getText().trim();
+			this.password = new String(pfPassword.getPassword()).trim();
+			try{
+				this.port = Integer.parseInt(tfPort.getText().trim());
+			}
+			catch(NumberFormatException e){
+				this.port = 22;
 			}
 		}
 	}
@@ -134,39 +138,73 @@ public class Settings extends JFrame {
 					Files.createDirectory(original);
 					Files.createDirectory(downloads);
 					System.out.println("Archive directory successfully created.");
+					setDirsCreated(true);
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Error during the creation of archiving directories.", "Directory creation error", JOptionPane.INFORMATION_MESSAGE);
 					System.out.println("Error while creating an archive directory - " + e.getMessage());
+					setDirsCreated(false);
 				}
 			}
 		}
+		else
+			setDirsCreated(true);
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String name) {
+		this.user = name;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getWorkDir() {
+		return workDir;
+	}
+
+	public void setWorkDir(String workDir) {
+		this.workDir = workDir;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public boolean isLoginStatus() {
+		return loginStatus;
+	}
+
+	public void setLoginStatus(boolean loginStatus) {
+		this.loginStatus = loginStatus;
+	}
+
+	public boolean isDirsCreated() {
+		return dirsCreated;
+	}
+
+	public void setDirsCreated(boolean dirsCreated) {
+		this.dirsCreated = dirsCreated;
 	}
 	
-	public String getName(){
-		return this.name;
-	}
 	
-	public String getPassword(){
-		return this.password;
-	}
-	
-	public boolean getLoginStatus(){
-		return this.loginStatus;
-	}
-	
-	public String getDir(){
-		return this.workDir;
-	}
-	
-	public void setName(String s){
-		this.name = s;
-	}
-	
-	public void setPassword(String s){
-		this.password = s;
-	}
-	
-	public void setLoginStatus(boolean b){
-		this.loginStatus = b;
-	}
 }

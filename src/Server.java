@@ -14,10 +14,11 @@ public class Server
 		String  host = "imap.gmail.com", // change accordingly
 				mailStoreType = "imap";
 		
-		Mail gmail = new Mail(host);
-		FTP ftp = new FTP();
-		Settings settings = new Settings(gmail, ftp);
-		gmail.setSettings(settings);
+		//Mail gmail = new Mail(host);
+		Settings settings = new Settings();
+		FTP ftp = new FTP(settings);
+		MainWindow window = new MainWindow(ftp, settings);
+		//gmail.setSettings(settings);
 		
 		/*Archive archive = new Archive("C:/Users/Jakub/Desktop/test");
 		ArchiveMessage am = new ArchiveMessage("random_Jakub-Simo_10.pdf", FileStatus.Downloaded);
@@ -34,7 +35,6 @@ public class Server
 		System.out.println("Getting attachments.");
 		gmail.getAttachments();
 	*/
-		MainWindow window = new MainWindow(gmail, settings);
 		/*settings.setDirs();
 		Printer myPrinter = new Printer(settings.getDir());
 		try{

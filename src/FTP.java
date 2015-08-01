@@ -14,7 +14,16 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 public class FTP {
-	public FTP() {}
+	private String SFTPHOST, SFTPUSER, SFTPPASS, SFTPWORKINGDIR;
+	private int SFTPPORT;
+	private Session session;
+	private Channel channel;
+	private ChannelSftp channelSftp;
+	private Settings settings;
+	
+	public FTP(Settings s) {
+		this.settings = s;
+	}
 
 	public void startFTP(){
 		/*String SFTPHOST = "server02.inetadmin.eu";
@@ -22,25 +31,13 @@ public class FTP {
 		String SFTPUSER = "janbolech_kubik369";
 		String SFTPPASS = JOptionPane.showInputDialog(new JFrame("InputDialog"), "Input your FTP password?");
 		String SFTPWORKINGDIR = "/ironbaron.eu/";*/
-		String SFTPHOST = "eloth.gjh.sk";
-		int SFTPPORT = 22;
-		String SFTPUSER = "simo.j";
-		String SFTPPASS = JOptionPane.showInputDialog(new JFrame("InputDialog"), "Input your FTP password?");
-		String SFTPWORKINGDIR = "/home/2012/simo.j/imagine/";
-		Session session = null;
-		Channel channel = null;
-		ChannelSftp channelSftp = null;
+		/*SFTPHOST = "eloth.gjh.sk";
+		SFTPPORT = 22;
+		SFTPUSER = "simo.j";
+		SFTPPASS = JOptionPane.showInputDialog(new JFrame("InputDialog"), "Input your FTP password?");
+		*/
+		SFTPWORKINGDIR = "/home/2012/simo.j/";
 		try {
-			JSch jsch = new JSch();
-			session = jsch.getSession(SFTPUSER, SFTPHOST, SFTPPORT);
-			session.setPassword(SFTPPASS);
-			java.util.Properties config = new java.util.Properties();
-			config.put("StrictHostKeyChecking", "no");
-			session.setConfig(config);
-			session.connect();
-			channel = session.openChannel("sftp");
-			channel.connect();
-			channelSftp = (ChannelSftp) channel;
 			channelSftp.cd(SFTPWORKINGDIR);
 			/*byte[] buffer = new byte[1024];
 			BufferedInputStream bis = new BufferedInputStream(channelSftp.get("imagine.txt"));
@@ -55,17 +52,84 @@ public class FTP {
 			bis.close();
 			bos.close();*/
 			// lists all the files in a directory
-			channelSftp.rm("imagine.txt");
 			Vector filelist = channelSftp.ls(SFTPWORKINGDIR);
 			String temp;
             for(int i=0; i<filelist.size();i++){
             	temp = filelist.get(i).toString();
                 System.out.println(temp.substring(temp.lastIndexOf(" ") + 1));
             }
-            channelSftp.exit();
-            session.disconnect();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
+	
+	public boolean connect(){
+		try{
+			JSch jsch = new JSch();
+			session = jsch.getSession(settings.getUser(), settings.getHost(), settings.getPort());
+			session.setPassword(settings.getPassword());
+			java.util.Properties config = new java.util.Properties();
+			config.put("StrictHostKeyChecking", "no");
+			session.setConfig(config);
+			session.connect();
+			channel = session.openChannel("sftp");
+			channel.connect();
+			channelSftp = (ChannelSftp) channel;
+		} catch(Exception e){
+			System.out.println("Error during connection check: " + e.getMessage());
+			return false;
+		}
+		if(channelSftp.isConnected()){
+			settings.setLoginStatus(true);
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public void disconnect(){
+		channelSftp.exit();
+		session.disconnect();
+	}
+
+	public String getHost() {
+		return SFTPHOST;
+	}
+
+	public void setHost(String sFTPHOST) {
+		SFTPHOST = sFTPHOST;
+	}
+
+	public String getUser() {
+		return SFTPUSER;
+	}
+
+	public void setUser(String sFTPUSER) {
+		SFTPUSER = sFTPUSER;
+	}
+
+	public String getPassword() {
+		return SFTPPASS;
+	}
+
+	public void setPassword(String sFTPPASS) {
+		SFTPPASS = sFTPPASS;
+	}
+
+	public String getDir() {
+		return SFTPWORKINGDIR;
+	}
+
+	public void setDir(String sFTPWORKINGDIR) {
+		SFTPWORKINGDIR = sFTPWORKINGDIR;
+	}
+
+	public int getPort() {
+		return SFTPPORT;
+	}
+
+	public void setPort(int sFTPPORT) {
+		SFTPPORT = sFTPPORT;
+	}
+	
 }

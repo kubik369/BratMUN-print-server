@@ -14,13 +14,15 @@ public class MainWindow extends JFrame
 {
 	Mail gmail;
 	Settings settings;
+	FTP ftp;
 	JPanel topPanel;
 	MainPanel myMainPanel;
 	JButton btnLogin, btnConnect, btnChangeDir;
 	
-	public MainWindow(Mail a, Settings s)
+	public MainWindow(FTP f, Settings s)
 	{
-		this.gmail = a;
+		//this.gmail = a;
+		this.ftp = f;
 		this.settings = s;
 		// nice look & feel
 		try {
@@ -68,7 +70,7 @@ public class MainWindow extends JFrame
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				settings.setDir();
-				btnConnect.setEnabled(settings.getLoginStatus() && (settings.getDir() != null));
+				btnConnect.setEnabled(settings.isDirsCreated());
 			}
 		});
 		topPanel.setLayout(null);
@@ -87,22 +89,31 @@ public class MainWindow extends JFrame
 	// actionListener method of Login button 
 	private void btnLoginAction(){
 		// get the name and password and try the connection to the server.
-		this.settings.getCredentials();
-		if(this.settings.getLoginStatus()){
+		settings.getCredentials();
+		/*if(){
 			JOptionPane.showMessageDialog(null, "Login successful", "Login status", JOptionPane.INFORMATION_MESSAGE);
 			this.settings.setLoginStatus(true);
 		}
 		else{
 			JOptionPane.showMessageDialog(null, "Login unsuccessful", "Login status", JOptionPane.INFORMATION_MESSAGE);
 			this.settings.setLoginStatus(false);
-		}
-		this.btnConnect.setEnabled(this.settings.getLoginStatus() && (this.settings.getDir() != null));
+		}*/
 	}
 	
 	private void btnConnectAction(){
-		if (btnConnect.getText().compareTo("Connect") == 0)
-        	btnConnect.setText("Disconnect");
-        else 
-        	btnConnect.setText("Connect");
+		if (btnConnect.getText().compareTo("Connect") == 0){
+			if(this.ftp.connect()){
+				JOptionPane.showMessageDialog(null, "Succesful connection to the FTP server.");
+				btnConnect.setText("Disconnect");
+				this.ftp.startFTP();
+			}
+			else
+				JOptionPane.showMessageDialog(null, "Something went wrong, probably your login data.");
+		}
+		else{ 
+			btnConnect.setText("Connect");
+			this.ftp.disconnect();
+			JOptionPane.showMessageDialog(null, "Successful disconnection");
+		}
 	}
 }

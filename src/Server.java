@@ -7,10 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Server
-{	
-	public static void main(String[] args)
-	{
+public class Server{	
+	public static void main(String[] args){
+		Server server = new Server();
+	}
+	
+	public Server(){
 		String  host = "imap.gmail.com", // change accordingly
 				mailStoreType = "imap";
 		

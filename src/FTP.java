@@ -3,10 +3,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -14,29 +13,35 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 public class FTP {
-	private String SFTPHOST, SFTPUSER, SFTPPASS, SFTPWORKINGDIR;
-	private int SFTPPORT;
 	private Session session;
 	private Channel channel;
 	private ChannelSftp channelSftp;
 	private Settings settings;
-	
+	private Timer timer;
+
 	public FTP(Settings s) {
 		this.settings = s;
 	}
-
-	public void startFTP(){
-		/*String SFTPHOST = "server02.inetadmin.eu";
-		int SFTPPORT = 22;
-		String SFTPUSER = "janbolech_kubik369";
-		String SFTPPASS = JOptionPane.showInputDialog(new JFrame("InputDialog"), "Input your FTP password?");
-		String SFTPWORKINGDIR = "/ironbaron.eu/";*/
-		/*SFTPHOST = "eloth.gjh.sk";
-		SFTPPORT = 22;
-		SFTPUSER = "simo.j";
-		SFTPPASS = JOptionPane.showInputDialog(new JFrame("InputDialog"), "Input your FTP password?");
-		*/
-		SFTPWORKINGDIR = "/home/2012/simo.j/";
+	
+	public void start(){
+		timer = new Timer();
+		timer.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				downloadFiles();				
+			}
+		}, 10 * 1000, 10 * 1000);
+	}
+	
+	public void stop(){
+		timer.cancel();
+		timer.purge();
+	}
+	
+	public void downloadFiles(){
+		System.out.println(System.currentTimeMillis());
+		//folder from which the files will be downloaded
+		String SFTPWORKINGDIR = "/home/other/bratmun/www/printing/print-ready/";
 		try {
 			channelSftp.cd(SFTPWORKINGDIR);
 			/*byte[] buffer = new byte[1024];
@@ -54,7 +59,7 @@ public class FTP {
 			// lists all the files in a directory
 			Vector filelist = channelSftp.ls(SFTPWORKINGDIR);
 			String temp;
-            for(int i=0; i<filelist.size();i++){
+            for(int i=0; i < filelist.size();i++){
             	temp = filelist.get(i).toString();
                 System.out.println(temp.substring(temp.lastIndexOf(" ") + 1));
             }
@@ -64,6 +69,9 @@ public class FTP {
 	}
 	
 	public boolean connect(){
+		// check if we aren't already connected to the FTP
+		if(channelSftp != null && isConnected())
+			return true;
 		try{
 			JSch jsch = new JSch();
 			session = jsch.getSession(settings.getUser(), settings.getHost(), settings.getPort());
@@ -88,48 +96,13 @@ public class FTP {
 	}
 	
 	public void disconnect(){
-		channelSftp.exit();
-		session.disconnect();
-	}
-
-	public String getHost() {
-		return SFTPHOST;
-	}
-
-	public void setHost(String sFTPHOST) {
-		SFTPHOST = sFTPHOST;
-	}
-
-	public String getUser() {
-		return SFTPUSER;
-	}
-
-	public void setUser(String sFTPUSER) {
-		SFTPUSER = sFTPUSER;
-	}
-
-	public String getPassword() {
-		return SFTPPASS;
-	}
-
-	public void setPassword(String sFTPPASS) {
-		SFTPPASS = sFTPPASS;
-	}
-
-	public String getDir() {
-		return SFTPWORKINGDIR;
-	}
-
-	public void setDir(String sFTPWORKINGDIR) {
-		SFTPWORKINGDIR = sFTPWORKINGDIR;
-	}
-
-	public int getPort() {
-		return SFTPPORT;
-	}
-
-	public void setPort(int sFTPPORT) {
-		SFTPPORT = sFTPPORT;
+		if(isConnected()){
+			channelSftp.exit();
+			session.disconnect();
+		}
 	}
 	
+	public boolean isConnected() {
+		return channelSftp != null && channelSftp.isConnected();
+	}
 }

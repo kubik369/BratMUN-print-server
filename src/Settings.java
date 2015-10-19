@@ -1,110 +1,30 @@
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
-public class Settings extends JFrame {
+public class Settings {
 	private String user, password, host, workDir;
 	private int port;
 	boolean loginStatus, dirsCreated;
 	//private Mail mailbox;
 	private FTP ftp;
+	private LoginWindow login;
 	
 	public Settings(){
 		//this.mailbox = gmail;
 	}
 	
-	public void getCredentials()
-	{
-		/*this.loginStatus = false;
-		// creates the input dialog for username and password
-		JPanel myPanel = new JPanel();
-		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
-		JLabel lUser = new JLabel("Username:");
-		lUser.setHorizontalAlignment(SwingConstants.CENTER);
-		myPanel.add(lUser);
-		JTextField userField = new JTextField(20);
-		myPanel.add(userField);
-		JLabel lPass = new JLabel("Password:");
-		lPass.setHorizontalAlignment(SwingConstants.CENTER);
-		myPanel.add(lPass);
-		JPasswordField passwordField = new JPasswordField(20);
-		myPanel.add(passwordField);
-		
-		int result = JOptionPane.showConfirmDialog(null, myPanel, 
-		           "Login", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		if (result == JOptionPane.OK_OPTION) {
-			if(mailbox.checkConnection("imap.gmail.com", userField.getText(), new String(passwordField.getPassword()))){
-				this.name = userField.getText();
-				this.password = new String(passwordField.getPassword());
-				this.loginStatus = true;
-			}
-		}*/
-		// creates the input dialog for username and password
-		JPanel myPanel = new JPanel(),
-				pUser = new JPanel(new GridBagLayout()),
-				pPassword = new JPanel(new GridBagLayout()),
-				pServer = new JPanel(new GridBagLayout()),
-				pPort = new JPanel(new GridBagLayout());
-		
-		JLabel lUser = new JLabel("Username"),
-			   lPassword = new JLabel("Password"),
-			   lServer = new JLabel("Server"),
-			   lPort = new JLabel("Port");
-		JTextField tfUser = new JTextField(20),
-				   tfServer = new JTextField(20),
-				   tfPort = new JTextField(4);
-		JPasswordField pfPassword = new JPasswordField(20);
-		
-		pServer.add(lServer);
-		pServer.add(tfServer);
-		pPort.add(lPort);
-		pPort.add(tfPort);
-		pUser.add(lUser);
-		pUser.add(tfUser);
-		pPassword.add(lPassword);
-		pPassword.add(pfPassword);
-		
-		pPort.setBackground(Color.RED);
-		
-		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
-		myPanel.add(pServer);
-		myPanel.add(pPort);
-		myPanel.add(pUser);
-		myPanel.add(pPassword);
-		
-		int result = JOptionPane.showConfirmDialog(null, myPanel, 
-		           "Login", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		if (result == JOptionPane.OK_OPTION) {
-			// if(mailbox.checkConnection("imap.gmail.com", tfUser.getText(), new String(pfPassword.getPassword()))){
-			this.host = tfServer.getText().trim();
-			this.user = tfUser.getText().trim();
-			this.password = new String(pfPassword.getPassword()).trim();
-			try{
-				this.port = Integer.parseInt(tfPort.getText().trim());
-			}
-			catch(NumberFormatException e){
-				this.port = 22;
-			}
-		}
+	public void getCredentials(){
+		login = new LoginWindow(this);
 	}
 	
 	public void setDir() {
@@ -126,16 +46,12 @@ public class Settings extends JFrame {
 				this.workDir = chooser.getCurrentDirectory().toString();
 		}
 		Path archive = Paths.get(this.workDir + "/archive"),
-			 serialized = Paths.get(this.workDir + "/archive/serialized"),
-			 original = Paths.get(this.workDir + "/archive/originals"),
 			 downloads = Paths.get(this.workDir + "/downloads");
 		if(Files.notExists(archive)){
 			int reply = JOptionPane.showConfirmDialog(null, "Do you wish to create the directories?", "Directory wizard", JOptionPane.YES_NO_OPTION);
 			if (reply == JOptionPane.YES_OPTION) {
 				try {
 					Files.createDirectory(archive);
-					Files.createDirectory(serialized);
-					Files.createDirectory(original);
 					Files.createDirectory(downloads);
 					System.out.println("Archive directory successfully created.");
 					setDirsCreated(true);

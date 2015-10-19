@@ -8,8 +8,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.BorderLayout;
 
+@SuppressWarnings("serial")
 public class MainWindow extends JFrame
 {
 	Mail gmail;
@@ -21,13 +24,12 @@ public class MainWindow extends JFrame
 	
 	public MainWindow(FTP f, Settings s)
 	{
-		//this.gmail = a;
 		this.ftp = f;
 		this.settings = s;
 		// nice look & feel
 		try {
-			//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			//UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
 			System.out.println("Exception occured in MainWindow constructor: " + e.getMessage());
 			e.printStackTrace();
@@ -83,6 +85,12 @@ public class MainWindow extends JFrame
 		getContentPane().add(topPanel, BorderLayout.CENTER);
 		getContentPane().add(myMainPanel, BorderLayout.NORTH);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				if(ftp.isConnected())
+					ftp.disconnect();
+			}
+		});
 		this.setVisible(true);
 	}
 	
@@ -90,14 +98,6 @@ public class MainWindow extends JFrame
 	private void btnLoginAction(){
 		// get the name and password and try the connection to the server.
 		settings.getCredentials();
-		/*if(){
-			JOptionPane.showMessageDialog(null, "Login successful", "Login status", JOptionPane.INFORMATION_MESSAGE);
-			this.settings.setLoginStatus(true);
-		}
-		else{
-			JOptionPane.showMessageDialog(null, "Login unsuccessful", "Login status", JOptionPane.INFORMATION_MESSAGE);
-			this.settings.setLoginStatus(false);
-		}*/
 	}
 	
 	private void btnConnectAction(){
@@ -105,7 +105,7 @@ public class MainWindow extends JFrame
 			if(this.ftp.connect()){
 				JOptionPane.showMessageDialog(null, "Succesful connection to the FTP server.");
 				btnConnect.setText("Disconnect");
-				this.ftp.startFTP();
+				this.ftp.start();
 			}
 			else
 				JOptionPane.showMessageDialog(null, "Something went wrong, probably your login data.");

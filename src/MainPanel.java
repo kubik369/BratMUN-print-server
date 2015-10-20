@@ -14,16 +14,13 @@ import javax.swing.table.DefaultTableModel;
 public class MainPanel extends JPanel 
 {
 	//private JTable myTable;
-	private Mail m;
 	private ArrayList<Message> messageList;
 	private ArrayList<String[]> tableData = new ArrayList<String[]>();
 	private JTable myTable;
 	private JTable table;
 		
-	public MainPanel(Mail a)
+	public MainPanel()
 	{				
-		this.m = a;
-		
 		DefaultTableModel myModel = new DefaultTableModel(){
 	        //set the JTable read-only
 	        public boolean isCellEditable(int row, int column) 

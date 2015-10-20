@@ -15,12 +15,11 @@ import java.awt.BorderLayout;
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame
 {
-	Mail gmail;
 	Settings settings;
 	FTP ftp;
 	JPanel topPanel;
 	MainPanel myMainPanel;
-	JButton btnLogin, btnConnect, btnChangeDir;
+	JButton btnLogin, btnConnect, btnChangeDir, btnStartStop;
 	
 	public MainWindow(FTP f, Settings s)
 	{
@@ -43,7 +42,7 @@ public class MainWindow extends JFrame
 		this.setSize(800, 550);
 		this.setLocationRelativeTo(null);
 		
-		myMainPanel = new MainPanel(this.gmail); 		
+		myMainPanel = new MainPanel(); 		
 		topPanel = new JPanel();
 		btnLogin = new JButton("Login");
 		btnConnect = new JButton("Connect");
@@ -52,14 +51,14 @@ public class MainWindow extends JFrame
 		
 		// position the buttons in the JPanel
 		btnLogin.setBounds(348, 11, 100, 23);
-		btnConnect.setBounds(238, 11, 100, 23);
-		btnChangeDir.setBounds(458, 11, 100, 23);
+		btnConnect.setBounds(215, 11, 123, 23);
+		btnChangeDir.setBounds(458, 11, 111, 23);
 		
 		// actionListerens for buttons
 		btnLogin.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e){
-				btnLoginAction();				
+				settings.getCredentials();			
 			}
 		});
 		btnConnect.addActionListener(new ActionListener() {
@@ -83,7 +82,26 @@ public class MainWindow extends JFrame
 		topPanel.add(btnChangeDir);
 		
 		getContentPane().add(topPanel, BorderLayout.CENTER);
+		
+		btnStartStop = new JButton("Start");
+		btnStartStop.setBounds(581, 10, 81, 25);
+		btnStartStop.setEnabled(false);
+		btnStartStop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(btnStartStop.getText() == "Start"){
+					ftp.start();
+					btnStartStop.setText("Stop");
+				}
+				else{
+					ftp.stop();
+					btnStartStop.setText("Start");
+				}
+			}
+		});
+		topPanel.add(btnStartStop);
 		getContentPane().add(myMainPanel, BorderLayout.NORTH);
+		
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
@@ -94,18 +112,12 @@ public class MainWindow extends JFrame
 		this.setVisible(true);
 	}
 	
-	// actionListener method of Login button 
-	private void btnLoginAction(){
-		// get the name and password and try the connection to the server.
-		settings.getCredentials();
-	}
-	
 	private void btnConnectAction(){
 		if (btnConnect.getText().compareTo("Connect") == 0){
 			if(this.ftp.connect()){
 				JOptionPane.showMessageDialog(null, "Succesful connection to the FTP server.");
 				btnConnect.setText("Disconnect");
-				this.ftp.start();
+				btnStartStop.setEnabled(true);
 			}
 			else
 				JOptionPane.showMessageDialog(null, "Something went wrong, probably your login data.");
@@ -113,6 +125,7 @@ public class MainWindow extends JFrame
 		else{ 
 			btnConnect.setText("Connect");
 			this.ftp.disconnect();
+			btnStartStop.setEnabled(false);
 			JOptionPane.showMessageDialog(null, "Successful disconnection");
 		}
 	}

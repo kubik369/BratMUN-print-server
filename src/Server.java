@@ -1,12 +1,3 @@
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
-import java.awt.print.PrinterException;
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class Server{	
 	public static void main(String[] args){
 		Server server = new Server();
@@ -14,12 +5,11 @@ public class Server{
 	
 	public Server(){
 		Settings settings = new Settings();
+		Printer myPrinter = new Printer(settings.getWorkDir());
+		settings.setPrinter(myPrinter);
 		FTP ftp = new FTP(settings);
 		MainWindow window = new MainWindow(ftp, settings);
-		
-		//ftp.startFTP();
-		/*settings.setDirs();
-		Printer myPrinter = new Printer(settings.getDir());
+		/*
 		try{
 			System.out.println(settings.getDir());
 			//System.exit(0);

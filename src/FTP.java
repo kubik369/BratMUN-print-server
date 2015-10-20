@@ -17,15 +17,16 @@ public class FTP {
 	private Channel channel;
 	private ChannelSftp channelSftp;
 	private Settings settings;
-	private Timer timer;
+	private Timer downloadTimer, printTimer;
+	private boolean downloading;
 
 	public FTP(Settings s) {
 		this.settings = s;
 	}
 	
 	public void start(){
-		timer = new Timer();
-		timer.schedule(new TimerTask(){
+		downloadTimer = new Timer();
+		downloadTimer.schedule(new TimerTask(){
 			@Override
 			public void run() {
 				downloadFiles();				
@@ -34,14 +35,18 @@ public class FTP {
 	}
 	
 	public void stop(){
-		timer.cancel();
-		timer.purge();
+		downloadTimer.cancel();
+		downloadTimer.purge();
+		printTimer.cancel();
+		printTimer.purge();
 	}
 	
 	public void downloadFiles(){
+		this.downloading = true;
 		System.out.println(System.currentTimeMillis());
 		//folder from which the files will be downloaded
-		String SFTPWORKINGDIR = "/home/other/bratmun/www/printing/print-ready/";
+		//String SFTPWORKINGDIR = "/home/other/bratmun/www/printing/print-ready/";
+		String SFTPWORKINGDIR = settings.getFTPdir();
 		try {
 			channelSftp.cd(SFTPWORKINGDIR);
 			/*byte[] buffer = new byte[1024];
@@ -66,6 +71,7 @@ public class FTP {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		this.downloading = false;
 	}
 	
 	public boolean connect(){

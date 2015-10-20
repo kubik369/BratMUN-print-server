@@ -16,7 +16,7 @@ import javax.swing.JButton;
 
 @SuppressWarnings("serial")
 public class LoginWindow extends JFrame {
-	private JTextField tfServer,tfPort, tfUsername;
+	private JTextField tfServer,tfPort, tfUsername, tfRootDir;
 	private JPasswordField passwordField;
 	private JLabel lblServer,lblPort, lblUsername, lblPassword;
 	private JButton btnConnect;
@@ -27,7 +27,7 @@ public class LoginWindow extends JFrame {
 		this.settings = s;
 	}
 	private void setupGUI() {
-		setBounds(new Rectangle(0, 0, 340, 180));
+		setBounds(new Rectangle(0, 0, 340, 210));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
@@ -72,7 +72,7 @@ public class LoginWindow extends JFrame {
 		
 		btnConnect = new JButton("Connect");
 		btnConnect.setActionCommand("");
-		btnConnect.setBounds(118, 112, 89, 23);
+		btnConnect.setBounds(110, 150, 105, 23);
 		btnConnect.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -80,6 +80,15 @@ public class LoginWindow extends JFrame {
 			}
 		});
 		getContentPane().add(btnConnect);
+		
+		JLabel lblRootFolder = new JLabel("Root Folder");
+		lblRootFolder.setBounds(20, 102, 288, 15);
+		getContentPane().add(lblRootFolder);
+		
+		tfRootDir = new JTextField();
+		tfRootDir.setBounds(20, 119, 288, 19);
+		getContentPane().add(tfRootDir);
+		tfRootDir.setColumns(10);
 		
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
@@ -91,7 +100,8 @@ public class LoginWindow extends JFrame {
 		String  server = tfServer.getText(),
 				username = tfUsername.getText(),
 				password = new String(passwordField.getPassword()),
-				port = tfPort.getText();
+				port = tfPort.getText(),
+				rootDir = tfRootDir.getText();
 		if(server.isEmpty()){
 			tfServer.setBackground(Color.RED);
 			return;
@@ -111,10 +121,16 @@ public class LoginWindow extends JFrame {
 			passwordField.setBackground(Color.RED);
 			return;
 		}
+		passwordField.setBackground(Color.WHITE);
+		if(rootDir.isEmpty()){
+			tfRootDir.setBackground(Color.RED);
+			return;
+		}
 		settings.setUser(username);
 		settings.setPassword(password);
 		settings.setPort(Integer.parseInt(port));
 		settings.setHost(server);
+		settings.setFTPdir(rootDir);
 		this.dispose();
 	}
 }

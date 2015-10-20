@@ -1,27 +1,21 @@
-
 import java.awt.Color;
-import java.awt.GridBagLayout;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 public class Settings {
-	private String user, password, host, workDir;
+	private String user, password, host, workDir, FTPdir;
 	private int port;
 	boolean loginStatus, dirsCreated;
-	//private Mail mailbox;
 	private FTP ftp;
 	private LoginWindow login;
+	private Printer printer;
 	
-	public Settings(){
-		//this.mailbox = gmail;
-	}
+	public Settings(){}
 	
 	public void getCredentials(){
 		login = new LoginWindow(this);
@@ -122,5 +116,19 @@ public class Settings {
 		this.dirsCreated = dirsCreated;
 	}
 	
-	
+	public String getFTPdir() {
+		return FTPdir;
+	}
+
+	public void setFTPdir(String fTPdir) {
+		FTPdir = fTPdir;
+	}
+
+	public Printer getPrinter() {
+		return printer;
+	}
+
+	public void setPrinter(Printer printer) {
+		this.printer = printer;
+	}
 }

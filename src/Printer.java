@@ -55,7 +55,7 @@ public class Printer
 		job.setPrintService(myPrinter);
 		try {
 			Path src = Paths.get(this.workDir + "/downloads/" + filename),
-				 dest = Paths.get(this.workDir + "/archive/originals/test.pdf"),
+				 dest = Paths.get(this.workDir + "/archive/test.pdf"),
 				 temp = Paths.get(this.workDir + "/temp.pdf");
 			
 			PDFMergerUtility ut = new PDFMergerUtility();

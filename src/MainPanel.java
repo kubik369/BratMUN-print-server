@@ -2,8 +2,6 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -14,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 public class MainPanel extends JPanel 
 {
 	//private JTable myTable;
-	private ArrayList<Message> messageList;
+	//private ArrayList<Message> messageList;
 	private ArrayList<String[]> tableData = new ArrayList<String[]>();
 	private JTable myTable;
 	private JTable table;

@@ -1,7 +1,9 @@
+import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,13 +11,19 @@ import java.util.ArrayList;
 
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.Copies;
+import javax.print.attribute.standard.JobName;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.*;
 import org.apache.commons.io.FileCleaningTracker;
+
 import static java.nio.file.StandardCopyOption.*;
 
 public class Printer
@@ -51,27 +59,43 @@ public class Printer
 	{
 		long startTime = System.currentTimeMillis();
 		System.out.println("Printing");
-		PrinterJob job = PrinterJob.getPrinterJob();
-		job.setPrintService(myPrinter);
 		try {
-			Path src = Paths.get(this.workDir + "/downloads/" + filename),
-				 dest = Paths.get(this.workDir + "/archive/test.pdf"),
-				 temp = Paths.get(this.workDir + "/temp.pdf");
+			Path //src = Paths.get(this.workDir + "/downloads/" + filename),
+				src = Paths.get(filename),
+				temp = Paths.get("C:/Users/Jakub/Desktop/test/temp.pdf");
+				//dest = Paths.get(this.workDir + "/archive/test.pdf"),
+				 //temp = Paths.get(this.workDir + "/temp.pdf");
 			
 			PDFMergerUtility ut = new PDFMergerUtility();
-			File f = src.toFile();
-			for(int i = 0;i < copies;i++)
-				ut.addSource(f);
-			ut.setDestinationFileName(temp.toString());
-			ut.mergeDocuments();
-			File out = temp.toFile();
-			PDDocument doc = PDDocument.load(out);
-			PDFPrinter printing = new PDFPrinter(doc, Scaling.ACTUAL_SIZE, Orientation.AUTO);
-			printing.silentPrint(job);
+			int i;
+			ut.addSource(filename);
+			ut.addSource(filename);
+			ut.setDestinationFileName("C:/Users/Jakub/Desktop/test/temp.pdf");
+			for(i = 1;i < copies;i*=2){
+				//ut.appendDocument(mergeDoc, mergeDoc);
+				ut.mergeDocuments(null);
+				ut = new PDFMergerUtility();
+				ut.setDestinationFileName("C:/Users/Jakub/Desktop/test/temp.pdf");
+				ut.addSource("C:/Users/Jakub/Desktop/test/temp.pdf");
+				ut.addSource("C:/Users/Jakub/Desktop/test/temp.pdf");
+				System.out.println(i + " merged");
+			}
+			PDDocument doc = PDDocument.load(src.toFile());
+			//PDFPrinter printing = new PDFPrinter(doc, Scaling.ACTUAL_SIZE, Orientation.AUTO);
+			//printing.silentPrint(job);
+			//Creates a new attribute set
+			PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+			PrinterJob job = PrinterJob.getPrinterJob();
+			aset.add(new JobName("BratMUN Print", null));
+			aset.add(new Copies(copies));
+			job.setPrintService(myPrinter);
+			job.setPageable(new PDFPageable(doc));
+			job.setCopies(copies);
+			job.printDialog(aset);
 			doc.close();
-			Files.delete(temp);
-			Files.copy(src, dest, REPLACE_EXISTING);
-			cleaner.track(f, job);
+			//Files.delete(temp);
+			//Files.copy(src, dest, REPLACE_EXISTING);
+			//cleaner.track(f, job);
 		}
 		catch(IOException e){
 			e.printStackTrace();

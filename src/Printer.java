@@ -30,12 +30,12 @@ public class Printer
 {
 	private PrintService myPrinter;
 	private String workDir;
-	private FileCleaningTracker cleaner;
+	//private FileCleaningTracker cleaner;
 	
 	public Printer(String dir)
 	{
 		this.workDir = dir;
-		this.cleaner = new FileCleaningTracker();
+		//this.cleaner = new FileCleaningTracker();
 		getPrintService();
 	}
 	
@@ -60,42 +60,35 @@ public class Printer
 		long startTime = System.currentTimeMillis();
 		System.out.println("Printing");
 		try {
-			Path //src = Paths.get(this.workDir + "/downloads/" + filename),
-				src = Paths.get(filename),
-				temp = Paths.get("C:/Users/Jakub/Desktop/test/temp.pdf");
-				//dest = Paths.get(this.workDir + "/archive/test.pdf"),
-				 //temp = Paths.get(this.workDir + "/temp.pdf");
-			
+			String  src = this.workDir + "/downloads/" + filename,
+					dest = this.workDir + "/archive/" + filename,
+					temp = this.workDir + "/temp.pdf";
 			PDFMergerUtility ut = new PDFMergerUtility();
-			int i;
-			ut.addSource(filename);
-			ut.addSource(filename);
-			ut.setDestinationFileName("C:/Users/Jakub/Desktop/test/temp.pdf");
-			for(i = 1;i < copies;i*=2){
-				//ut.appendDocument(mergeDoc, mergeDoc);
+			// add the initial source file
+			ut.addSource(src);
+			ut.setDestinationFileName(temp);
+			// merge temp PDF with itself until it creates a document
+			// with enough copies
+			for(int i = 1;i < copies;i *= 2){
 				ut.mergeDocuments(null);
 				ut = new PDFMergerUtility();
-				ut.setDestinationFileName("C:/Users/Jakub/Desktop/test/temp.pdf");
-				ut.addSource("C:/Users/Jakub/Desktop/test/temp.pdf");
-				ut.addSource("C:/Users/Jakub/Desktop/test/temp.pdf");
-				System.out.println(i + " merged");
+				ut.setDestinationFileName(temp);
+				ut.addSource(temp);
+				ut.addSource(temp);
 			}
-			PDDocument doc = PDDocument.load(src.toFile());
-			//PDFPrinter printing = new PDFPrinter(doc, Scaling.ACTUAL_SIZE, Orientation.AUTO);
-			//printing.silentPrint(job);
-			//Creates a new attribute set
+			// load the merged document for printing
+			PDDocument doc = PDDocument.load(new File(temp));
+			// delete the redundant copies
+			while(doc.getNumberOfPages() > copies)
+				doc.removePage(doc.getNumberOfPages() - 1);
 			PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
-			PrinterJob job = PrinterJob.getPrinterJob();
 			aset.add(new JobName("BratMUN Print", null));
-			aset.add(new Copies(copies));
+			PrinterJob job = PrinterJob.getPrinterJob();
 			job.setPrintService(myPrinter);
 			job.setPageable(new PDFPageable(doc));
-			job.setCopies(copies);
-			job.printDialog(aset);
+			job.print(aset);
 			doc.close();
-			//Files.delete(temp);
-			//Files.copy(src, dest, REPLACE_EXISTING);
-			//cleaner.track(f, job);
+			Files.move(Paths.get(src), Paths.get(dest), REPLACE_EXISTING);
 		}
 		catch(IOException e){
 			e.printStackTrace();

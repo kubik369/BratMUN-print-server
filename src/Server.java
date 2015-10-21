@@ -10,7 +10,7 @@ public class Server{
 		Settings settings = new Settings();
 		Printer myPrinter = new Printer(settings.getWorkDir());
 		try {
-			myPrinter.print("C:\\Users\\Jakub\\Desktop\\test\\test.pdf", 10);
+			myPrinter.print("C:\\Users\\Jakub\\Desktop\\test\\test.pdf", 60);
 		} catch (IOException | PrinterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -17,7 +17,7 @@ public class FTP {
 	private Channel channel;
 	private ChannelSftp channelSftp;
 	private Settings settings;
-	private Timer downloadTimer, printTimer;
+	private Timer downloadTimer;
 	private boolean downloading;
 
 	public FTP(Settings s) {
@@ -37,8 +37,6 @@ public class FTP {
 	public void stop(){
 		downloadTimer.cancel();
 		downloadTimer.purge();
-		printTimer.cancel();
-		printTimer.purge();
 	}
 	
 	public void downloadFiles(){
@@ -110,5 +108,9 @@ public class FTP {
 	
 	public boolean isConnected() {
 		return channelSftp != null && channelSftp.isConnected();
+	}
+
+	public boolean isDownloading() {
+		return downloading;
 	}
 }

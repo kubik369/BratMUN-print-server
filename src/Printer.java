@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
@@ -30,6 +32,7 @@ public class Printer
 {
 	private PrintService myPrinter;
 	private String workDir;
+	private Timer printTimer;
 	//private FileCleaningTracker cleaner;
 	
 	public Printer(String dir)
@@ -37,6 +40,21 @@ public class Printer
 		this.workDir = dir;
 		//this.cleaner = new FileCleaningTracker();
 		getPrintService();
+	}
+	
+	public void start(){
+		printTimer = new Timer();
+		printTimer.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				printQueue();				
+			}
+		}, 10 * 1000, 10 * 1000);
+	}
+	
+	public void stop(){
+		printTimer.cancel();
+		printTimer.purge();
 	}
 	
 	private void getPrintService(){
@@ -55,9 +73,24 @@ public class Printer
 		this.myPrinter = printServices[jcb.getSelectedIndex()];
 	}
 	
-	public boolean print(String filename, int copies) throws IOException, PrinterException
-	{
+	public void printQueue(){
+		File folder = new File(this.workDir + "/downloads/");
+		File[] listOfFiles = folder.listFiles();
+		for(int i = 0; i < listOfFiles.length; i++){
+			if(listOfFiles[i].isFile()) {
+				try {
+					print(listOfFiles[i].getName());
+				} catch (IOException | PrinterException e) {
+					System.out.println(" Could not print " + listOfFiles[i].getName());		
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public boolean print(String filename) throws IOException, PrinterException{
 		long startTime = System.currentTimeMillis();
+		int copies = Integer.parseInt(filename.split("+")[3]);
 		System.out.println("Printing");
 		try {
 			String  src = this.workDir + "/downloads/" + filename,
@@ -100,7 +133,7 @@ public class Printer
 		return true;
 	}
 	
-	public int getNumOfDeletingFiles(){
+	/*public int getNumOfDeletingFiles(){
 		return cleaner.getTrackCount();
-	}
+	}*/
 }

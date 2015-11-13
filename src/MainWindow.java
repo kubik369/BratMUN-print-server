@@ -11,13 +11,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.BorderLayout;
+import javax.swing.JEditorPane;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame
 {
 	Settings settings;
 	FTP ftp;
-	JPanel topPanel;
 	MainPanel myMainPanel;
 	JButton btnLogin, btnConnect, btnChangeDir, btnStartStop;
 	
@@ -41,18 +41,49 @@ public class MainWindow extends JFrame
 		setTitle("BratMUN Print Server");
 		this.setSize(800, 550);
 		this.setLocationRelativeTo(null);
+		getContentPane().setLayout(null);
 		
-		myMainPanel = new MainPanel(); 		
-		topPanel = new JPanel();
-		btnLogin = new JButton("Login");
 		btnConnect = new JButton("Connect");
-		btnChangeDir = new JButton("Change dir");
+		btnConnect.setBounds(10, 292, 123, 23);
+		getContentPane().add(btnConnect);
 		btnConnect.setEnabled(false);
+		btnLogin = new JButton("Login");
+		btnLogin.setBounds(25, 338, 100, 23);
+		getContentPane().add(btnLogin);
+		btnChangeDir = new JButton("Change dir");
+		btnChangeDir.setBounds(179, 290, 111, 23);
+		getContentPane().add(btnChangeDir);
 		
-		// position the buttons in the JPanel
-		btnLogin.setBounds(348, 11, 100, 23);
-		btnConnect.setBounds(215, 11, 123, 23);
-		btnChangeDir.setBounds(458, 11, 111, 23);
+		btnStartStop = new JButton("Start");
+		btnStartStop.setBounds(191, 336, 81, 25);
+		getContentPane().add(btnStartStop);
+		btnStartStop.setEnabled(false);
+		
+		JEditorPane editorPane = new JEditorPane();
+		editorPane.setBounds(10, 11, 353, 225);
+		getContentPane().add(editorPane);
+		btnStartStop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(btnStartStop.getText() == "Start"){
+					ftp.start();
+					settings.getPrinter().start();
+					btnStartStop.setText("Stop");
+				}
+				else{
+					ftp.stop();
+					settings.getPrinter().stop();
+					btnStartStop.setText("Start");
+				}
+			}
+		});
+		btnChangeDir.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				settings.setDir();
+				btnConnect.setEnabled(settings.isDirsCreated());
+			}
+		});
 		
 		// actionListerens for buttons
 		btnLogin.addActionListener(new ActionListener() {
@@ -67,40 +98,6 @@ public class MainWindow extends JFrame
 				btnConnectAction();
 			}
 	    });
-		btnChangeDir.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				settings.setDir();
-				btnConnect.setEnabled(settings.isDirsCreated());
-			}
-		});
-		topPanel.setLayout(null);
-		
-		// add the buttons to the JPanel
-		topPanel.add(btnConnect);
-		topPanel.add(btnLogin);
-		topPanel.add(btnChangeDir);
-		
-		getContentPane().add(topPanel, BorderLayout.CENTER);
-		
-		btnStartStop = new JButton("Start");
-		btnStartStop.setBounds(581, 10, 81, 25);
-		btnStartStop.setEnabled(false);
-		btnStartStop.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(btnStartStop.getText() == "Start"){
-					ftp.start();
-					btnStartStop.setText("Stop");
-				}
-				else{
-					ftp.stop();
-					btnStartStop.setText("Start");
-				}
-			}
-		});
-		topPanel.add(btnStartStop);
-		getContentPane().add(myMainPanel, BorderLayout.NORTH);
 		
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter(){

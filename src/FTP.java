@@ -41,30 +41,31 @@ public class FTP {
 	
 	public void downloadFiles(){
 		this.downloading = true;
-		System.out.println(System.currentTimeMillis());
+		System.out.println("Downloading");
 		//folder from which the files will be downloaded
 		//String SFTPWORKINGDIR = "/home/other/bratmun/www/printing/print-ready/";
 		String SFTPWORKINGDIR = settings.getFTPdir();
 		try {
 			channelSftp.cd(SFTPWORKINGDIR);
-			/*byte[] buffer = new byte[1024];
-			BufferedInputStream bis = new BufferedInputStream(channelSftp.get("imagine.txt"));
-			File newFile = new File("C:/Users/Jakub/Desktop/test/imagine.txt");
-			OutputStream os = new FileOutputStream(newFile);
-			BufferedOutputStream bos = new BufferedOutputStream(os);
-			int readCount; // System.out.println("Getting: " + theLine);
-			while ((readCount = bis.read(buffer)) > 0) {
-				System.out.println("Writing: ");
-				bos.write(buffer, 0, readCount);
-			}
-			bis.close();
-			bos.close();*/
 			// lists all the files in a directory
-			Vector filelist = channelSftp.ls(SFTPWORKINGDIR);
-			String temp;
-            for(int i=0; i < filelist.size();i++){
-            	temp = filelist.get(i).toString();
-                System.out.println(temp.substring(temp.lastIndexOf(" ") + 1));
+			Vector fileList = channelSftp.ls(SFTPWORKINGDIR);
+            for(int i = 0;i < fileList.size();i++){
+            	String name = fileList.get(i).toString().substring(56);
+            	//System.out.println("Substringed name = " + name);
+            	if(name.equals(".") || name.equals("..")) continue;
+            	byte[] buffer = new byte[10000];
+    			BufferedInputStream bis = new BufferedInputStream(channelSftp.get(name));
+    			File newFile = new File(this.settings.getWorkDir() + "/downloads/" + name);
+    			OutputStream os = new FileOutputStream(newFile);
+    			BufferedOutputStream bos = new BufferedOutputStream(os);
+    			int readCount; // System.out.println("Getting: " + theLine);
+    			while ((readCount = bis.read(buffer)) > 0) {
+    				System.out.println("Writing: ");
+    				bos.write(buffer, 0, readCount);
+    			}
+    			channelSftp.rm(SFTPWORKINGDIR + "/" + name);
+    			bis.close();
+    			bos.close();
             }
 		} catch (Exception ex) {
 			ex.printStackTrace();

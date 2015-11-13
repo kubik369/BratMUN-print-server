@@ -31,13 +31,13 @@ import static java.nio.file.StandardCopyOption.*;
 public class Printer
 {
 	private PrintService myPrinter;
-	private String workDir;
+	private Settings settings;
 	private Timer printTimer;
 	//private FileCleaningTracker cleaner;
 	
-	public Printer(String dir)
+	public Printer(Settings s)
 	{
-		this.workDir = dir;
+		this.settings = s;
 		//this.cleaner = new FileCleaningTracker();
 		getPrintService();
 	}
@@ -49,7 +49,7 @@ public class Printer
 			public void run() {
 				printQueue();				
 			}
-		}, 10 * 1000, 10 * 1000);
+		}, 10, 60 * 1000);
 	}
 	
 	public void stop(){
@@ -74,13 +74,22 @@ public class Printer
 	}
 	
 	public void printQueue(){
-		File folder = new File(this.workDir + "/downloads/");
+		System.out.println("Printing");
+		File folder = new File(this.settings.getWorkDir() + "/downloads/");
 		File[] listOfFiles = folder.listFiles();
+		if(listOfFiles == null || listOfFiles.length == 0){
+			System.out.println("No files found.");
+			return;
+		}
 		for(int i = 0; i < listOfFiles.length; i++){
 			if(listOfFiles[i].isFile()) {
 				try {
-					print(listOfFiles[i].getName());
-				} catch (IOException | PrinterException e) {
+					String name = listOfFiles[i].getName();
+					String[] data = name.split("\\+");
+					System.out.println("Printing " + data[0]);
+					continue;
+					//print(listOfFiles[i].getName());
+				} catch (Exception e) {
 					System.out.println(" Could not print " + listOfFiles[i].getName());		
 					e.printStackTrace();
 				}
@@ -93,9 +102,9 @@ public class Printer
 		int copies = Integer.parseInt(filename.split("+")[3]);
 		System.out.println("Printing");
 		try {
-			String  src = this.workDir + "/downloads/" + filename,
-					dest = this.workDir + "/archive/" + filename,
-					temp = this.workDir + "/temp.pdf";
+			String  src = this.settings.getWorkDir() + "/downloads/" + filename,
+					dest = this.settings.getWorkDir() + "/archive/" + filename,
+					temp = this.settings.getWorkDir() + "/temp.pdf";
 			PDFMergerUtility ut = new PDFMergerUtility();
 			// add the initial source file
 			ut.addSource(src);

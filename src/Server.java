@@ -8,14 +8,13 @@ public class Server{
 	
 	public Server(){
 		Settings settings = new Settings();
-		Printer myPrinter = new Printer(settings.getWorkDir());
+		Printer myPrinter = new Printer(settings);
 		/*try {
 			myPrinter.print("C:\\Users\\Jakub\\Desktop\\test\\test.pdf", 60);
 		} catch (IOException | PrinterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		System.exit(0);
 		settings.setPrinter(myPrinter);
 		FTP ftp = new FTP(settings);
 		MainWindow window = new MainWindow(ftp, settings);

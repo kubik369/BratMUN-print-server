@@ -33,11 +33,13 @@ public class LoginWindow extends JFrame {
 		
 		tfServer = new JTextField();
 		tfServer.setBounds(20, 30, 134, 20);
+		tfServer.setText("turing.gjh.sk");
 		getContentPane().add(tfServer);
 		tfServer.setColumns(10);
 		
 		tfPort = new JTextField();
 		tfPort.setBounds(174, 30, 45, 20);
+		tfPort.setText("22");
 		getContentPane().add(tfPort);
 		tfPort.setColumns(10);
 		
@@ -87,6 +89,7 @@ public class LoginWindow extends JFrame {
 		
 		tfRootDir = new JTextField();
 		tfRootDir.setBounds(20, 119, 288, 19);
+		tfRootDir.setText("/home/other/bratmun/www/printing/print-ready/");
 		getContentPane().add(tfRootDir);
 		tfRootDir.setColumns(10);
 		

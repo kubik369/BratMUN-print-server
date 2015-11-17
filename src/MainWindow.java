@@ -10,16 +10,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.awt.BorderLayout;
 import javax.swing.JEditorPane;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame
 {
-	Settings settings;
-	FTP ftp;
-	MainPanel myMainPanel;
-	JButton btnLogin, btnConnect, btnChangeDir, btnStartStop;
+	private Settings settings;
+	private FTP ftp;
+	private MainPanel myMainPanel;
+	private JButton btnSettings, btnConnect, btnChangeDir, btnStartStop;
+	private JEditorPane infoBox;
 	
 	public MainWindow(FTP f, Settings s)
 	{
@@ -34,34 +37,50 @@ public class MainWindow extends JFrame
 			e.printStackTrace();
 		}
 		GUI();
+		//create Printer and ask the user for printer, which is to be used
+		this.settings.getPrinter().getPrintService();
 	}
 	
 	private void GUI(){
+		//general JFrame settings
 		setResizable(false);
 		setTitle("BratMUN Print Server");
-		this.setSize(800, 550);
+		this.setSize(650, 330);
 		this.setLocationRelativeTo(null);
 		getContentPane().setLayout(null);
-		
+		//close the connection with FTP if user force-closes the window
+		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				if(ftp.isConnected())
+					ftp.disconnect();
+			}
+		});
+		//info textbox
+		infoBox = new JEditorPane();
+		infoBox.setBounds(10, 11, 622, 225);
+		getContentPane().add(infoBox);
+		this.settings.setInfoBox(infoBox);
+		//all the buttons
 		btnConnect = new JButton("Connect");
-		btnConnect.setBounds(10, 292, 123, 23);
+		btnConnect.setBounds(173, 247, 123, 23);
 		getContentPane().add(btnConnect);
 		btnConnect.setEnabled(false);
-		btnLogin = new JButton("Login");
-		btnLogin.setBounds(25, 338, 100, 23);
-		getContentPane().add(btnLogin);
+		
+		btnSettings = new JButton("Settings");
+		btnSettings.setBounds(483, 247, 100, 23);
+		getContentPane().add(btnSettings);
+		
 		btnChangeDir = new JButton("Change dir");
-		btnChangeDir.setBounds(179, 290, 111, 23);
+		btnChangeDir.setBounds(332, 247, 111, 23);
 		getContentPane().add(btnChangeDir);
 		
 		btnStartStop = new JButton("Start");
-		btnStartStop.setBounds(191, 336, 81, 25);
+		btnStartStop.setBounds(44, 247, 81, 25);
 		getContentPane().add(btnStartStop);
 		btnStartStop.setEnabled(false);
 		
-		JEditorPane editorPane = new JEditorPane();
-		editorPane.setBounds(10, 11, 353, 225);
-		getContentPane().add(editorPane);
+		// actionListerens for buttons
 		btnStartStop.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -85,8 +104,7 @@ public class MainWindow extends JFrame
 			}
 		});
 		
-		// actionListerens for buttons
-		btnLogin.addActionListener(new ActionListener() {
+		btnSettings.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e){
 				settings.getCredentials();			
@@ -98,32 +116,31 @@ public class MainWindow extends JFrame
 				btnConnectAction();
 			}
 	    });
-		
-		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		this.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e){
-				if(ftp.isConnected())
-					ftp.disconnect();
-			}
-		});
+
+		//show the window
 		this.setVisible(true);
 	}
 	
 	private void btnConnectAction(){
 		if (btnConnect.getText().compareTo("Connect") == 0){
 			if(this.ftp.connect()){
-				JOptionPane.showMessageDialog(null, "Succesful connection to the FTP server.");
+				//JOptionPane.showMessageDialog(null, "Succesful connection to the FTP server.");
+				//show successfull connection status update in infobox
+				this.settings.addMessage("Succesful connection to the FTP server.");
 				btnConnect.setText("Disconnect");
 				btnStartStop.setEnabled(true);
 			}
-			else
-				JOptionPane.showMessageDialog(null, "Something went wrong, probably your login data.");
+			else{
+				JOptionPane.showMessageDialog(null, "Something went wrong, probably your login data, please try again.");
+				this.settings.addMessage("Something went wrong while logging in.");
+			}
 		}
 		else{ 
 			btnConnect.setText("Connect");
 			this.ftp.disconnect();
 			btnStartStop.setEnabled(false);
-			JOptionPane.showMessageDialog(null, "Successful disconnection");
+			//JOptionPane.showMessageDialog(null, "Successful disconnection");
+			this.settings.addMessage("Successful disconnection.");
 		}
 	}
 }

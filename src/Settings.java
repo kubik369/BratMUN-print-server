@@ -3,7 +3,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -14,11 +17,14 @@ public class Settings {
 	private FTP ftp;
 	private LoginWindow login;
 	private Printer printer;
+	private JEditorPane infoBox;
 	
-	public Settings(){}
+	public Settings(){
+		this.printer = new Printer(this);
+	}
 	
 	public void getCredentials(){
-		login = new LoginWindow(this);
+		this.login = new LoginWindow(this);
 	}
 	
 	public void setDir() {
@@ -31,8 +37,8 @@ public class Settings {
 		int option = chooser.showOpenDialog(null);
 		if (option == JFileChooser.APPROVE_OPTION && Files.isDirectory(Paths.get(chooser.getSelectedFile().toString()))) {
 			this.workDir = chooser.getSelectedFile().toString();
-			System.out.println("Directory successfully changed.");
-			//JOptionPane.showMessageDialog(null, "Directory successfuly changed.", "Directory status", JOptionPane.INFORMATION_MESSAGE);
+			this.addMessage("Directory successfully changed");
+			//JOptionPane.showMessageDialog(null, "Directory successfully changed.", "Directory status", JOptionPane.INFORMATION_MESSAGE);
 		} 
 		else{
 			JOptionPane.showMessageDialog(null, "You have not chosen a directory, using last open directory.", "Directory change error", JOptionPane.INFORMATION_MESSAGE);
@@ -47,17 +53,23 @@ public class Settings {
 				try {
 					Files.createDirectory(archive);
 					Files.createDirectory(downloads);
-					System.out.println("Archive directory successfully created.");
+					this.addMessage("Archive and download directory successfully created.");
 					setDirsCreated(true);
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Error during the creation of archiving directories.", "Directory creation error", JOptionPane.INFORMATION_MESSAGE);
-					System.out.println("Error while creating an archive directory - " + e.getMessage());
+					this.addMessage("Error while creating an archive directory, please try again.");
+					//System.out.println("Error while creating an archive directory - " + e.getMessage());
 					setDirsCreated(false);
 				}
 			}
 		}
 		else
 			setDirsCreated(true);
+	}
+	
+	public void addMessage(String message){
+		String timeStamp = new SimpleDateFormat("[dd.MM.yyyy HH:mm:ss]").format(Calendar.getInstance().getTime());
+		this.infoBox.setText(infoBox.getText() + String.format("%s %s\n", timeStamp, message));
 	}
 
 	public String getUser() {
@@ -130,5 +142,13 @@ public class Settings {
 
 	public void setPrinter(Printer printer) {
 		this.printer = printer;
+	}
+	
+	public JEditorPane getInfoBox() {
+		return infoBox;
+	}
+
+	public void setInfoBox(JEditorPane infoBox) {
+		this.infoBox = infoBox;
 	}
 }

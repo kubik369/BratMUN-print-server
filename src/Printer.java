@@ -33,13 +33,13 @@ public class Printer
 	private PrintService myPrinter;
 	private Settings settings;
 	private Timer printTimer;
+	private boolean printing;
 	//private FileCleaningTracker cleaner;
 	
 	public Printer(Settings s)
 	{
 		this.settings = s;
 		//this.cleaner = new FileCleaningTracker();
-		getPrintService();
 	}
 	
 	public void start(){
@@ -57,13 +57,13 @@ public class Printer
 		printTimer.purge();
 	}
 	
-	private void getPrintService(){
+	public void getPrintService(){
 		PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
-		System.out.println("Number of print services: " + printServices.length);
+		//System.out.println("Number of print services: " + printServices.length);
 
 		ArrayList<String> printers = new ArrayList<String>();
 		for (PrintService printer : printServices){
-			System.out.println("Printer: " + printer.getName());
+			//System.out.println("Printer: " + printer.getName());
 			printers.add(printer.getName());
 		}
 		JComboBox<String> jcb = new JComboBox<String>(printers.toArray(new String[printers.size()]));
@@ -71,10 +71,12 @@ public class Printer
 		JOptionPane.showMessageDialog( null, jcb, "Select your printer", JOptionPane.QUESTION_MESSAGE);
 		//System.out.println(jcb.getSelectedIndex());
 		this.myPrinter = printServices[jcb.getSelectedIndex()];
+		this.settings.addMessage("Printer chosen: " + this.myPrinter.getName());
 	}
 	
 	public void printQueue(){
-		System.out.println("Printing");
+		if(this.printing == true) return;
+		this.printing = true;
 		File folder = new File(this.settings.getWorkDir() + "/downloads/");
 		File[] listOfFiles = folder.listFiles();
 		if(listOfFiles == null || listOfFiles.length == 0){
@@ -86,21 +88,32 @@ public class Printer
 				try {
 					String name = listOfFiles[i].getName();
 					String[] data = name.split("\\+");
-					System.out.println("Printing " + data[0]);
-					continue;
-					//print(listOfFiles[i].getName());
+					//System.out.println("Printing " + data[0]);
+					this.settings.addMessage("Printing " + data[0]);
+					print(listOfFiles[i].getName());
 				} catch (Exception e) {
-					System.out.println(" Could not print " + listOfFiles[i].getName());		
+					//System.out.println("Could not print " + listOfFiles[i].getName());		
+					this.settings.addMessage(" Could not print " + listOfFiles[i].getName());
 					e.printStackTrace();
 				}
 			}
 		}
+		this.printing = false;
 	}
 	
 	public boolean print(String filename) throws IOException, PrinterException{
+		// used for measuring the print time
 		long startTime = System.currentTimeMillis();
-		int copies = Integer.parseInt(filename.split("+")[3]);
+		// parse the number of copies from the PDF file
+		// the file is suppossed to to be in format
+		// filename+firstName+secondName+numOfCopies+commitee.pdf
+		String[] data = filename.split("\\+");
+		int copies = Integer.parseInt(data[3]);
 		System.out.println("Printing");
+		this.settings.addMessage(String.format(
+				"Printing the file %s sent by %s %s from %s",
+				data[0], data[1], data[2], data[4].substring(0, data[4].length() - 4)
+		));
 		try {
 			String  src = this.settings.getWorkDir() + "/downloads/" + filename,
 					dest = this.settings.getWorkDir() + "/archive/" + filename,
@@ -136,9 +149,10 @@ public class Printer
 			e.printStackTrace();
 			return false;
 		}
+		//get the print time and display it
 		long endTime   = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
-		System.out.println("Printing succesful, total time taken to print this shit was: " + (double)totalTime / 1000 + "s");
+		this.settings.addMessage("Printing succesful, total time taken to print this shit was: " + (double)totalTime / 1000 + "s");
 		return true;
 	}
 	

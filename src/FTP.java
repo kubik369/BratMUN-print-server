@@ -41,7 +41,7 @@ public class FTP {
 	
 	public void downloadFiles(){
 		this.downloading = true;
-		System.out.println("Downloading");
+		//System.out.println("Downloading");
 		//folder from which the files will be downloaded
 		//String SFTPWORKINGDIR = "/home/other/bratmun/www/printing/print-ready/";
 		String SFTPWORKINGDIR = settings.getFTPdir();
@@ -60,7 +60,7 @@ public class FTP {
     			BufferedOutputStream bos = new BufferedOutputStream(os);
     			int readCount; // System.out.println("Getting: " + theLine);
     			while ((readCount = bis.read(buffer)) > 0) {
-    				System.out.println("Writing: ");
+    				//System.out.println("Writing: ");
     				bos.write(buffer, 0, readCount);
     			}
     			channelSftp.rm(SFTPWORKINGDIR + "/" + name);
@@ -89,7 +89,8 @@ public class FTP {
 			channel.connect();
 			channelSftp = (ChannelSftp) channel;
 		} catch(Exception e){
-			System.out.println("Error during connection check: " + e.getMessage());
+			this.settings.addMessage("Error during the connection.");
+			//System.out.println("Error during connection check: " + e.getMessage());
 			return false;
 		}
 		if(channelSftp.isConnected()){

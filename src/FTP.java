@@ -64,6 +64,7 @@ public class FTP {
     				bos.write(buffer, 0, readCount);
     			}
     			channelSftp.rm(SFTPWORKINGDIR + "/" + name);
+    			this.settings.addMessage("Downloaded " + name);
     			bis.close();
     			bos.close();
             }

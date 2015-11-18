@@ -1,3 +1,5 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -8,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.print.PrintService;
@@ -19,6 +20,7 @@ import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.JobName;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
@@ -43,18 +45,17 @@ public class Printer
 	}
 	
 	public void start(){
-		printTimer = new Timer();
-		printTimer.schedule(new TimerTask(){
+		printTimer = new Timer(60 * 1000, new ActionListener(){
 			@Override
-			public void run() {
-				printQueue();				
+			public void actionPerformed(ActionEvent arg0) {
+				printQueue();
 			}
-		}, 10, 60 * 1000);
+		});
+		printTimer.start();
 	}
 	
 	public void stop(){
-		printTimer.cancel();
-		printTimer.purge();
+		printTimer.stop();
 	}
 	
 	public void getPrintService(){
@@ -81,6 +82,7 @@ public class Printer
 		File[] listOfFiles = folder.listFiles();
 		if(listOfFiles == null || listOfFiles.length == 0){
 			System.out.println("No files found.");
+			this.printing = false;
 			return;
 		}
 		for(int i = 0; i < listOfFiles.length; i++){
@@ -89,7 +91,7 @@ public class Printer
 					String name = listOfFiles[i].getName();
 					String[] data = name.split("\\+");
 					//System.out.println("Printing " + data[0]);
-					this.settings.addMessage("Printing " + data[0]);
+					//this.settings.addMessage("Printing " + data[0]);
 					print(listOfFiles[i].getName());
 				} catch (Exception e) {
 					//System.out.println("Could not print " + listOfFiles[i].getName());		
@@ -109,7 +111,7 @@ public class Printer
 		// filename+firstName+secondName+numOfCopies+commitee.pdf
 		String[] data = filename.split("\\+");
 		int copies = Integer.parseInt(data[3]);
-		System.out.println("Printing");
+		//System.out.println("Printing");
 		this.settings.addMessage(String.format(
 				"Printing the file %s sent by %s %s from %s",
 				data[0], data[1], data[2], data[4].substring(0, data[4].length() - 4)
@@ -124,6 +126,9 @@ public class Printer
 			ut.setDestinationFileName(temp);
 			// merge temp PDF with itself until it creates a document
 			// with enough copies
+			PDDocument tempDoc = PDDocument.load(new File(src));
+			int numOfPages = tempDoc.getNumberOfPages();
+			tempDoc.close();
 			for(int i = 1;i < copies;i *= 2){
 				ut.mergeDocuments(null);
 				ut = new PDFMergerUtility();
@@ -134,7 +139,7 @@ public class Printer
 			// load the merged document for printing
 			PDDocument doc = PDDocument.load(new File(temp));
 			// delete the redundant copies
-			while(doc.getNumberOfPages() > copies)
+			while(doc.getNumberOfPages() > copies * numOfPages)
 				doc.removePage(doc.getNumberOfPages() - 1);
 			PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
 			aset.add(new JobName("BratMUN Print", null));

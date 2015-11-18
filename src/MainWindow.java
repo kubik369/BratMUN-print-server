@@ -1,6 +1,7 @@
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import javax.swing.UIManager;
@@ -14,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.awt.BorderLayout;
 import javax.swing.JEditorPane;
+import java.awt.ScrollPane;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame
@@ -56,11 +58,6 @@ public class MainWindow extends JFrame
 					ftp.disconnect();
 			}
 		});
-		//info textbox
-		infoBox = new JEditorPane();
-		infoBox.setBounds(10, 11, 622, 225);
-		getContentPane().add(infoBox);
-		this.settings.setInfoBox(infoBox);
 		//all the buttons
 		btnConnect = new JButton("Connect");
 		btnConnect.setBounds(173, 247, 123, 23);
@@ -79,21 +76,20 @@ public class MainWindow extends JFrame
 		btnStartStop.setBounds(44, 247, 81, 25);
 		getContentPane().add(btnStartStop);
 		btnStartStop.setEnabled(false);
+		//info textbox
+		infoBox = new JEditorPane();
+		//infoBox.setBounds(10, 11, 624, 225);
+		//getContentPane().add(infoBox);
+		this.settings.setInfoBox(infoBox);
+		JScrollPane scroll = new JScrollPane(infoBox);
+		scroll.setBounds(10, 11, 624, 225);
+		this.add(scroll);
 		
 		// actionListerens for buttons
 		btnStartStop.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(btnStartStop.getText() == "Start"){
-					ftp.start();
-					settings.getPrinter().start();
-					btnStartStop.setText("Stop");
-				}
-				else{
-					ftp.stop();
-					settings.getPrinter().stop();
-					btnStartStop.setText("Start");
-				}
+				btnStartAction();
 			}
 		});
 		btnChangeDir.addActionListener(new ActionListener() {
@@ -119,6 +115,19 @@ public class MainWindow extends JFrame
 
 		//show the window
 		this.setVisible(true);
+	}
+	
+	private void btnStartAction(){
+		if(btnStartStop.getText() == "Start"){
+			ftp.start();
+			settings.getPrinter().start();
+			btnStartStop.setText("Stop");
+		}
+		else{
+			ftp.stop();
+			settings.getPrinter().stop();
+			btnStartStop.setText("Start");
+		}
 	}
 	
 	private void btnConnectAction(){

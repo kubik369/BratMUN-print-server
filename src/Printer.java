@@ -6,14 +6,20 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.TimerTask;
 
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
+import javax.print.SimpleDoc;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
@@ -26,6 +32,10 @@ import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.*;
+
+import com.activetree.common.print.SilentPrint;
+import com.activetree.pdfprint.SilentPrintPdf;
+
 import org.apache.commons.io.FileCleaningTracker;
 
 import static java.nio.file.StandardCopyOption.*;
@@ -110,13 +120,71 @@ public class Printer
 		// the file is suppossed to to be in format
 		// filename+firstName+secondName+numOfCopies+commitee.pdf
 		String[] data = filename.split("\\+");
+		String  src =  this.settings.getWorkDir() + "\\downloads\\" + filename,
+				dest = this.settings.getWorkDir() + "/archive/" + filename;
 		int copies = Integer.parseInt(data[3]);
 		//System.out.println("Printing");
 		this.settings.addMessage(String.format(
-				"Printing the file %s sent by %s %s from %s",
-				data[0], data[1], data[2], data[4].substring(0, data[4].length() - 4)
+				"Printing %d copies of the file %s sent by %s %s from %s",
+				copies, data[0], data[1], data[2], data[4].substring(0, data[4].length() - 4)
 		));
-		try {
+		Files.move(Paths.get(src), Paths.get(dest), REPLACE_EXISTING);
+		String acrobat = "C:\\Program Files (x86)\\Adobe\\Reader 11.0\\Reader\\AcroRd32.exe";
+		for(int i = 0;i < copies;i++){
+			Process p = Runtime.getRuntime().exec(String.format("%s /t \"%s\"", acrobat, dest));
+			try {
+				p.waitFor();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		//Printer
+		//watermark version
+	     /*SilentPrint silentPrint = new SilentPrintPdf();
+	     //default media size
+	     String paperSize = "(0, 0, 0, 0, 612, 792)";
+	     silentPrint.setAttribute(SilentPrint.PAPER, paperSize);
+	     //printer to print
+	     String printerName = myPrinter.getName();
+	     silentPrint.setAttribute(SilentPrint.PRINTER_NAME, printerName);
+	     //auto rotate and center
+	     silentPrint.setAttribute(SilentPrint.AUTO_ROTATE_AND_CENTER, Boolean.TRUE);
+	     //page scaling
+	     silentPrint.setAttribute(SilentPrint.PAGE_SCALING, SilentPrint.FIT_TO_PRINTABLE_AREA);
+	     //auto-match paper based on PDF page size.
+	     silentPrint.setAttribute(SilentPrint.AUTO_MATCH_PAPER, Boolean.FALSE);
+	     //collate
+	     silentPrint.setAttribute(SilentPrint.COLLATE_COPIES, Boolean.TRUE);
+	     //copies defaut 1; can make it to N copies
+	     silentPrint.setAttribute(SilentPrint.COPIES, new Integer(copies));
+	     //print all docs as one print job
+	     //silentPrint.setAttribute(SilentPrint.SINGLE_PRINT_JOB, Boolean.TRUE);
+	     //debug it
+	     //silentPrint.setAttribute(SilentPrint.DEBUG, Boolean.TRUE);
+	     silentPrint.setAttribute(SilentPrint.PRINT_QUALITY, SilentPrint.HIGH);
+	     //job name
+	     silentPrint.setAttribute(SilentPrint.JOB_NAME, data[0] + " Bratmun Print");
+	     //document
+	     silentPrint.setAttribute(SilentPrint.DOC_LIST, "file:/" + dest);
+	     //Add a docListener
+	     //must have a default constructor for this class.
+	     
+	     //silentPrint.setAttribute(SilentPrint.DOC_LISTENER, "demo.activetree.pdfprint.PdfDocListener");
+	     
+	     silentPrint.setAttribute(SilentPrint., arg1);
+	     //doc password protected if any
+	     //silentPrint.setAttribute(SilentPrint.PASSWORD, docPassword);
+	     //url protection if any
+	     //silentPrint.setAttribute(SilentPrint.URL_AUTH_ID, urlAuthId);
+	     //silentPrint.setAttribute(SilentPrint.URL_AUTH_PASSWORD, urlAuthPassword);
+	     try {
+	       silentPrint.start();
+	     }catch(Throwable t) {
+	       t.printStackTrace();
+	     }*/
+		// merging version, super slow
+		/*try {
 			String  src = this.settings.getWorkDir() + "/downloads/" + filename,
 					dest = this.settings.getWorkDir() + "/archive/" + filename,
 					temp = this.settings.getWorkDir() + "/temp.pdf";
@@ -154,6 +222,7 @@ public class Printer
 			e.printStackTrace();
 			return false;
 		}
+		*/
 		//get the print time and display it
 		long endTime   = System.currentTimeMillis();
 		long totalTime = endTime - startTime;

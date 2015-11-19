@@ -8,5 +8,11 @@
 	<classpathentry kind="lib" path="lib/jsch-0.1.53.jar"/>
 	<classpathentry kind="lib" path="lib/PDFBox/fontbox-2.0.0-RC1.jar"/>
 	<classpathentry kind="lib" path="lib/PDFBox/pdfbox-2.0.0-RC1.jar"/>
+	<classpathentry kind="lib" path="lib/printing/smartjcommon.jar"/>
+	<classpathentry kind="lib" path="lib/printing/bc.jar"/>
+	<classpathentry kind="lib" path="lib/printing/itext.jar"/>
+	<classpathentry kind="lib" path="lib/printing/jai_codec.jar"/>
+	<classpathentry kind="lib" path="lib/printing/jai_core.jar"/>
+	<classpathentry kind="lib" path="lib/printing/smartjprint.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
